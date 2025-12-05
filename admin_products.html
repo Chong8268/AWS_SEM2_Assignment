@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Admin | Products</title>
+
+<style>
+  body { margin:0; background:#0f0f0f; color:#fff; font-family:Poppins; }
+  .wrap { padding:40px; max-width:1100px; margin:auto; }
+  table { width:100%; border-collapse:collapse; }
+  th, td { padding:14px; border-bottom:1px solid #333; }
+  th { background:#181818; }
+  .btn {
+    padding:8px 14px; background:#00ffa6; color:#000; font-weight:700;
+    text-decoration:none; border-radius:8px;
+  }
+</style>
+</head>
+
+<body>
+<div class="wrap">
+  <h1>Product Management</h1>
+  <a class="btn" href="admin_add_product.html">+ Add Product</a>
+
+  <table>
+    <tr>
+      <th>ID</th><th>Name</th><th>Price</th><th>Stock</th><th>Action</th>
+    </tr>
+
+    <tr>
+      <td>1</td><td>Cheese Burger</td><td>8.90</td><td>40</td>
+      <td>
+        <a class="btn">Edit</a>
+      </td>
+    </tr>
+    
+  </table>
+
+</div>
+</body>
+</html>

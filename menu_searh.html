@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Menu | Cafeteria Xpress</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body { margin:0; background:#0f0f0f; color:#fff; font-family:Poppins; }
+.wrap { max-width:1100px; margin:40px auto; padding:20px; }
+
+.search-box input {
+  width:100%; padding:14px; border:1px solid #333;
+  border-radius:10px; background:#111; color:#fff;
+}
+
+.categories {
+  display:flex; gap:14px; margin:20px 0;
+}
+.cat-btn {
+  padding:10px 16px; border-radius:8px; background:#181818;
+  color:#fff; cursor:pointer; border:1px solid #333;
+}
+.card {
+  background:#181818; border-radius:14px; padding:20px;
+  margin-bottom:18px;
+}
+.price { color:#00ffa6; font-weight:700; }
+.btn {
+  padding:10px 14px; background:#00ffa6; color:#000;
+  border-radius:8px; text-decoration:none; font-weight:700;
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<h1>Our Menu</h1>
+
+<div class="search-box">
+  <input type="text" placeholder="Search for food...">
+</div>
+
+<div class="categories">
+  <div class="cat-btn">All</div>
+  <div class="cat-btn">Burgers</div>
+  <div class="cat-btn">Drinks</div>
+  <div class="cat-btn">Rice</div>
+</div>
+
+<div class="card">
+  <h3>Cheese Burger</h3>
+  <div class="price">RM 8.90</div>
+  <p>Juicy beef patty with cheese.</p>
+  <a class="btn">View</a>
+</div>
+
+</div>
+</body>
+</html>
