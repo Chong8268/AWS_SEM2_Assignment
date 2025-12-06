@@ -15,11 +15,13 @@
         nav {
             display: flex;
             justify-content: space-between;
-            padding: 20px 50px;
-            background-color: rgba(0,0,0,0.7);
+            align-items: center;
+            padding: 20px 2px;
+            background: rgba(0, 0, 0, 0.8);
             position: fixed;
             width: 100%;
             top: 0;
+            z-index: 10;
             backdrop-filter: blur(10px);
         }
 
@@ -86,13 +88,15 @@
 <body>
 
 <nav>
-    <div class="logo">CAFETERIA XPRESS</div>
-    <ul>
+        <div class="logo">CAFETERIA XPRESS</div>
+          <ul>
         <li><a href="index.html">Home</a></li>
         <li><a href="menu.html">Menu</a></li>
-        <li><a href="#">Order</a></li>
-    </ul>
-</nav>
+        <li><a href="menu_searh.html">Order</a></li>
+        <li><a href="login.html">Login</a></li>
+       </ul>
+
+    </nav>
 
 <div class="container">
     <h1 class="menu-title">Our Menu</h1>
