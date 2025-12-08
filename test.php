@@ -1,4 +1,4 @@
 <?php
-include "config.php";
-echo "Connection successful!";
+include 'config.php';
+echo "Database connected successfully!";
 ?>

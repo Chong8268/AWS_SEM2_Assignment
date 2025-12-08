@@ -1,17 +1,12 @@
 <?php
-$host = "localhost";     // XAMPP: localhost
-$dbname = "cafeteria";   // your database name
-$username = "root";      // XAMPP default user
-$password = "";          // XAMPP default password (empty)
+$host = "localhost";
+$user = "root"; // XAMPP 默认
+$pass = "";     // 默认空
+$dbname = "cafeteria";  // 你刚刚创建的 DB 名字
 
-try {
-    $conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
+$conn = new mysqli($host, $user, $pass, $dbname);
 
-    // Recommended settings
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-
-} catch (PDOException $e) {
-    die("Database connection failed: " . $e->getMessage());
+if ($conn->connect_error) {
+    die("❌ Database connection failed: " . $conn->connect_error);
 }
 ?>
