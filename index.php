@@ -1,4 +1,67 @@
+<?php
+// AUTO LOGIN BEFORE ANY OUTPUT
+session_start();
+include "config.php";
+
+$autoLogin = false;
+
+if (!isset($_SESSION["CustomerID"]) && isset($_COOKIE["remember_id"])) {
+
+    $cid = $_COOKIE["remember_id"];
+
+    $stmt = $conn->prepare("SELECT CustomerID, Name FROM Customer WHERE CustomerID = ?");
+    $stmt->bind_param("s", $cid);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($u = $result->fetch_assoc()) {
+        $_SESSION["CustomerID"] = $u["CustomerID"];
+        $_SESSION["Name"] = $u["Name"];
+        $autoLogin = true;
+    }
+}
+?>
 <?php include 'header.php'; ?>
+
+<!-- Toast (will NOT affect layout) -->
+<div id="toast"></div>
+
+<style>
+#toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 22px;
+    background: #00c977;
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity .35s ease, transform .35s ease;
+    z-index: 9999;
+    pointer-events: none;
+}
+#toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(6px);
+}
+</style>
+
+<script>
+function showToast(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 3000);
+}
+</script>
+
+<?php
+if ($autoLogin) {
+    echo "<script>showToast('Welcome back, " . htmlspecialchars($_SESSION['Name']) . "!');</script>";
+}
+?>
 <style>
 .page-home .hero {
     padding: 150px 50px 100px;
@@ -77,11 +140,7 @@
 }
 </style>
 
-
-<!-- PAGE WRAPPER -->
 <div class="page-content page-home">
-
-    <!-- HERO -->
     <section class="hero">
         <div class="hero-text">
             <h1>Fast, Fresh & Delivered<br>Right to You</h1>
@@ -98,7 +157,6 @@
         </div>
     </section>
 
-    <!-- CATEGORY SECTION -->
     <section class="categories">
         <h2>Popular Categories</h2>
         <div class="cat-grid">

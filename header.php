@@ -1,3 +1,24 @@
+<?php
+// Start session
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// AUTO LOGIN using Remember Me cookie (prevent auto-login after logout)
+if (
+    !isset($_SESSION["CustomerID"]) &&
+    isset($_COOKIE["remember_user"]) &&
+    !isset($_SESSION["force_logout"])
+) {
+    $_SESSION["CustomerID"] = $_COOKIE["remember_user"];
+}
+
+// If logged in manually again, remove force logout flag
+if (isset($_SESSION["CustomerID"]) && isset($_SESSION["force_logout"])) {
+    unset($_SESSION["force_logout"]);
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +26,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cafeteria Delivery Platform</title>
 
-    <!-- GLOBAL STYLE (only universal styles, no page-specific CSS) -->
     <style>
         body {
             margin: 0;
@@ -14,45 +34,45 @@
             color: #fff;
         }
 
-        /* NAVBAR */
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 2px;
-            background: rgba(0, 0, 0, 0.8);
+            padding: 20px 25px;
+            background: rgba(0, 0, 0, 0.85);
             position: fixed;
             width: 100%;
             top: 0;
             z-index: 10;
             backdrop-filter: blur(10px);
+            border-bottom: 1px solid #111;
         }
 
         nav .logo {
             font-size: 1.7rem;
             font-weight: 700;
             color: #00ffa6;
+            text-decoration: none;
         }
 
         nav ul {
             list-style: none;
             display: flex;
             gap: 30px;
-            flex-wrap: wrap;
+            margin: 0;
         }
 
         nav ul li a {
             color: #fff;
             text-decoration: none;
             font-size: 1rem;
-            transition: 0.3s;
+            transition: .3s;
         }
 
         nav ul li a:hover {
             color: #00ffa6;
         }
 
-        /* Sticky Footer Layout */
         .page-wrapper {
             min-height: 100vh;
             display: flex;
@@ -60,7 +80,7 @@
         }
 
         .page-content {
-            flex: 1; /* Push footer down */
+            flex: 1;
         }
 
         .site-footer {
@@ -70,25 +90,25 @@
             color: #777;
             margin-top: auto;
         }
-
-
     </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
 <nav>
     <a class="logo" href="index.php">CAFETERIA XPRESS</a>
 
     <ul>
         <li><a href="index.php">Home</a></li>
         <li><a href="menu.php">Menu</a></li>
-        <li><a href="menu_searh.php">Order</a></li>
-        <li><a href="login.php">Login</a></li>
+        <li><a href="menu_search.php">Order</a></li>
+
+        <?php if (isset($_SESSION["CustomerID"])): ?>
+            <li><a href="logout.php" style="color:#ff6b6b;font-weight:600;">Logout</a></li>
+        <?php else: ?>
+            <li><a href="login.php" style="color:#00ffa6;font-weight:600;">Login</a></li>
+        <?php endif; ?>
     </ul>
 </nav>
 
-<!-- WRAPPER (prevents content covered by navbar) -->
 <div class="page-wrapper" style="padding-top: 120px;">
-
