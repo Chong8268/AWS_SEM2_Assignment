@@ -120,10 +120,48 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     background:#00ffa6;color:#000;font-weight:700;cursor:pointer
   }
   .msg{margin-bottom:12px;color:#ff6b6b;font-size:14px;line-height:1.4}
+  .logo {
+        font-size: 1.7rem;
+        font-weight: 700;
+        color: #00ffa6;
+        text-decoration: none;
+    }
+
+    .back-btn {
+        background: #1a1a1a;
+        color: #fff;
+        border: 1px solid #333;
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: .25s ease;
+    }
+
+    .back-btn:hover {
+        background: #00ffa6;
+        color: #000;
+        border-color: #00ffa6;
+        transform: translateY(-2px);
+    }
 </style>
 </head>
 
 <body>
+<div style="
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:15px 20px;
+    background:#0f0f0f;
+    position:absolute;
+    top:0; left:0; right:0;
+">
+    <button class="back-btn" onclick="history.back()">Back</button>
+
+    <a class="logo" href="index.php">CAFETERIA XPRESS</a>
+</div>
+
 <div class="card">
   <h2>Register</h2>
 

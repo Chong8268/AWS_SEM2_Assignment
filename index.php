@@ -147,7 +147,7 @@ if ($autoLogin) {
             <p>Order your favourite meals from the campus cafeteria<br>
                and get them delivered in minutes.</p>
 
-            <a href="menu_searh.php">
+            <a href="menu_search.php">
                 <button class="cta-btn">Order Now</button>
             </a>
         </div>
