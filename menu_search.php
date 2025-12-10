@@ -67,11 +67,13 @@
 <!-- Categories -->
 <div class="ms-categories">
   <div class="ms-cat-btn" data-cat="">All</div>
-  <div class="ms-cat-btn" data-cat="Burgers">Burgers</div>
-  <div class="ms-cat-btn" data-cat="Drinks">Drinks</div>
-  <div class="ms-cat-btn" data-cat="Rice">Rice</div>
+  <div class="ms-cat-btn" data-cat="Meals">Meals</div>
   <div class="ms-cat-btn" data-cat="Noodles">Noodles</div>
   <div class="ms-cat-btn" data-cat="Chicken">Chicken</div>
+  <div class="ms-cat-btn" data-cat="Burgers">Burgers</div>
+  <div class="ms-cat-btn" data-cat="Salads">Salads</div>
+  <div class="ms-cat-btn" data-cat="Drinks">Drinks</div>
+  <div class="ms-cat-btn" data-cat="Desserts">Desserts</div>
 </div>
 
 <!-- Results -->

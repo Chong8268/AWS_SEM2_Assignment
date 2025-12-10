@@ -124,51 +124,69 @@
 
     <!-- Category Buttons -->
     <div class="menu-categories">
-        <div class="menu-cat-btn">All</div>
-        <div class="menu-cat-btn">Rice</div>
-        <div class="menu-cat-btn">Chicken</div>
-        <div class="menu-cat-btn">Noodles</div>
-        <div class="menu-cat-btn">Drinks</div>
+        <div class="menu-cat-btn" onclick="filterProducts('')">All</div>
+        <div class="menu-cat-btn" onclick="filterProducts('Meals')">Meals</div>
+        <div class="menu-cat-btn" onclick="filterProducts('Noodles')">Noodles</div>
+        <div class="menu-cat-btn" onclick="filterProducts('Chicken')">Chicken</div>
+        <div class="menu-cat-btn" onclick="filterProducts('Burgers')">Burgers</div>
+        <div class="menu-cat-btn" onclick="filterProducts('Salads')">Salads</div>
+        <div class="menu-cat-btn" onclick="filterProducts('Drinks')">Drinks</div>
+        <div class="menu-cat-btn" onclick="filterProducts('Desserts')">Desserts</div>
     </div>
 
     <!-- Product Grid -->
-    <div class="menu-grid">
+    <div class="menu-grid" id="menuGrid">
+        <?php
+        include 'config.php';
 
-        <div class="menu-card">
-            <img src="https://images.unsplash.com/photo-1604908177522-437cfdc8f63d">
-            <h3><a href="product.php">Chicken Rice</a></h3>
-            <p class="menu-desc">Fresh steamed chicken with rice.</p>
-            <p class="menu-price">RM 6.50</p>
-            <a class="menu-btn" href="product.php">View Item</a>
-        </div>
+        // Get category from GET variable (defaults to all if no category selected)
+        $category = isset($_GET['category']) ? $_GET['category'] : '';
 
-        <div class="menu-card">
-            <img src="https://images.unsplash.com/photo-1604908177253-44a1c047bb0d">
-            <h3>Fried Chicken</h3>
-            <p class="menu-desc">Crispy and juicy fried chicken.</p>
-            <p class="menu-price">RM 5.00</p>
-            <a class="menu-btn" href="product.php">View Item</a>
-        </div>
+        // Query products based on selected category or all if no category selected
+        if ($category) {
+            $sql = "SELECT * FROM Product WHERE categories = ?";
+        } else {
+            $sql = "SELECT * FROM Product";
+        }
 
-        <div class="menu-card">
-            <img src="https://images.unsplash.com/photo-1543352634-69a4e07fc1bf">
-            <h3>Noodle Soup</h3>
-            <p class="menu-desc">Hot comforting noodle soup.</p>
-            <p class="menu-price">RM 5.50</p>
-            <a class="menu-btn" href="product.php">View Item</a>
-        </div>
+        $stmt = $conn->prepare($sql);
+        if ($category) {
+            $stmt->bind_param("s", $category);
+        }
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-        <div class="menu-card">
-            <img src="https://images.unsplash.com/photo-1571079939793-6d0e6e3a3dfe">
-            <h3>Iced Lemon Tea</h3>
-            <p class="menu-desc">Refreshing ice-cold lemon tea.</p>
-            <p class="menu-price">RM 2.50</p>
-            <a class="menu-btn" href="product.php">View Item</a>
-        </div>
-
+        while ($row = $result->fetch_assoc()) {
+            $price = number_format($row['price'], 2);
+            echo '
+            <div class="menu-card">
+                <img src="' . $row['ImageURL'] . '" alt="' . $row['name'] . '">
+                <h3><a href="product.php?product_id=' . $row['ProductID'] . '">' . $row['name'] . '</a></h3>
+                <p class="menu-desc">' . $row['description'] . '</p>
+                <p class="menu-price">RM ' . $price . '</p>
+                <a class="menu-btn" href="product.php?product_id=' . $row['ProductID'] . '">View Item</a>
+            </div>';
+        }
+        ?>
     </div>
 
 </div>
 </div>
+
+<script>
+    // Function to filter products by category
+    function filterProducts(category) {
+        let url = window.location.href;
+        if (category) {
+            if (url.indexOf('?') > -1) {
+                window.location.href = url + '&category=' + category;
+            } else {
+                window.location.href = url + '?category=' + category;
+            }
+        } else {
+            window.location.href = url.split('?')[0];  // reset to all
+        }
+    }
+</script>
 
 <?php include 'footer.php'; ?>

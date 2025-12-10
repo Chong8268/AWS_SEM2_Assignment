@@ -37,10 +37,11 @@ if ($result->num_rows == 0) {
 }
 
 while ($row = $result->fetch_assoc()) {
+    $price = number_format($row['price'], 2);
     echo "
     <div class='ms-card'>
         <h3>{$row['name']}</h3>
-        <div class='ms-price'>RM {$row['price']}</div>
+        <div class='ms-price'>RM {$price}</div>
         <p>{$row['description']}</p>
         <a class='ms-btn' href='product.php?id={$row['ProductID']}'>View</a>
     </div>";
