@@ -156,17 +156,23 @@
         $stmt->execute();
         $result = $stmt->get_result();
 
+        
         while ($row = $result->fetch_assoc()) {
+            // 格式化价格为两位小数
             $price = number_format($row['price'], 2);
+            
+            // 构建商品卡片
             echo '
             <div class="menu-card">
-                <img src="' . $row['ImageURL'] . '" alt="' . $row['name'] . '">
-                <h3><a href="product.php?product_id=' . $row['ProductID'] . '">' . $row['name'] . '</a></h3>
+                <!-- 使用商品的图片URL -->
+                <img src="' . (empty($row['ImageURL']) ? 'default-image.jpg' : $row['ImageURL']) . '" alt="' . $row['name'] . '">
+                <h3><a href="product.php?id=' . $row['ProductID'] . '">' . $row['name'] . '</a></h3>
                 <p class="menu-desc">' . $row['description'] . '</p>
                 <p class="menu-price">RM ' . $price . '</p>
-                <a class="menu-btn" href="product.php?product_id=' . $row['ProductID'] . '">View Item</a>
+                <a class="menu-btn" href="product.php?id=' . $row['ProductID'] . '">View Item</a>
             </div>';
         }
+
         ?>
     </div>
 
