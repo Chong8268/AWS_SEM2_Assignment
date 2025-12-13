@@ -4,7 +4,11 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// AUTO LOGIN using Remember Me cookie (prevent auto-login after logout)
+include_once "config.php";
+
+/* --------------------------------
+   AUTO LOGIN（你原本的）
+-------------------------------- */
 if (
     !isset($_SESSION["CustomerID"]) &&
     isset($_COOKIE["remember_user"]) &&
@@ -13,9 +17,26 @@ if (
     $_SESSION["CustomerID"] = $_COOKIE["remember_user"];
 }
 
-// If logged in manually again, remove force logout flag
 if (isset($_SESSION["CustomerID"]) && isset($_SESSION["force_logout"])) {
     unset($_SESSION["force_logout"]);
+}
+
+/* --------------------------------
+   🔹 计算 Cart Item 数量（新增）
+-------------------------------- */
+$cartCount = 0;
+
+if (isset($_SESSION["CustomerID"])) {
+    $stmt = $conn->prepare("
+        SELECT SUM(ci.quantity) AS total
+        FROM cartitems ci
+        JOIN cart c ON c.CartID = ci.CartID
+        WHERE c.CustomerID = ?
+    ");
+    $stmt->bind_param("s", $_SESSION["CustomerID"]);
+    $stmt->execute();
+    $row = $stmt->get_result()->fetch_assoc();
+    $cartCount = $row["total"] ?? 0;
 }
 ?>
 
@@ -60,6 +81,7 @@ if (isset($_SESSION["CustomerID"]) && isset($_SESSION["force_logout"])) {
             display: flex;
             gap: 30px;
             margin: 0;
+            align-items: center;
         }
 
         nav ul li a {
@@ -71,6 +93,25 @@ if (isset($_SESSION["CustomerID"]) && isset($_SESSION["force_logout"])) {
 
         nav ul li a:hover {
             color: #00ffa6;
+        }
+
+        /* 🔹 Cart badge（新增） */
+        .cart-link {
+            position: relative;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -6px;
+            right: -10px;
+            background: #00ffa6;
+            color: #000;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 999px;
+            min-width: 18px;
+            text-align: center;
         }
 
         .page-wrapper {
@@ -104,9 +145,27 @@ if (isset($_SESSION["CustomerID"]) && isset($_SESSION["force_logout"])) {
         <li><a href="menu_search.php">Order</a></li>
 
         <?php if (isset($_SESSION["CustomerID"])): ?>
-            <li><a href="logout.php" style="color:#ff6b6b;font-weight:600;">Logout</a></li>
+            <!-- 🔹 Cart Button -->
+            <li>
+                <a href="cart.php" class="cart-link">
+                    Cart
+                    <?php if ($cartCount > 0): ?>
+                        <span class="cart-badge"><?= $cartCount ?></span>
+                    <?php endif; ?>
+                </a>
+            </li>
+
+            <li>
+                <a href="logout.php" style="color:#ff6b6b;font-weight:600;">
+                    Logout
+                </a>
+            </li>
         <?php else: ?>
-            <li><a href="login.php" style="color:#00ffa6;font-weight:600;">Login</a></li>
+            <li>
+                <a href="login.php" style="color:#00ffa6;font-weight:600;">
+                    Login
+                </a>
+            </li>
         <?php endif; ?>
     </ul>
 </nav>

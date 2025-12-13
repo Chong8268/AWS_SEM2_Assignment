@@ -2,26 +2,40 @@
 include 'header.php';
 include 'config.php';
 
-// 获取传递的 ProductID
-$product_id = isset($_GET['id']) ? $_GET['id'] : null;
-
-if ($product_id) {
-    // 查询该产品信息
-    $stmt = $conn->prepare("SELECT * FROM Product WHERE ProductID = ?");
-    $stmt->bind_param("s", $product_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows === 1) {
-        $product = $result->fetch_assoc();
-    } else {
-        echo "Product not found.";
-        exit;
-    }
-} else {
-    echo "Invalid product ID.";
+if (!isset($_SESSION["CustomerID"])) {
+    header("Location: login.php");
     exit;
 }
+
+$productID = isset($_GET['id']) ? $_GET['id'] : null;
+
+if ($productID) {
+    $stmt = $conn->prepare("SELECT * FROM product WHERE ProductID = ?");
+    $stmt->bind_param("s", $productID);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $product = $result->fetch_assoc();
+    $stock = (int)$product["stock_quantity"];
+    // 查当前用户购物车中，这个商品已经有多少
+    $cartQty = 0;
+
+    if (isset($_SESSION['CustomerID'])) {
+        $stmt = $conn->prepare("
+            SELECT SUM(ci.quantity) AS total
+            FROM cartitems ci
+            JOIN cart c ON c.CartID = ci.CartID
+            WHERE c.CustomerID = ? AND ci.ProductID = ?
+        ");
+        $stmt->bind_param("ss", $_SESSION['CustomerID'], $product['ProductID']);
+        $stmt->execute();
+        $rowQty = $stmt->get_result()->fetch_assoc();
+        $cartQty = (int)($rowQty['total'] ?? 0);
+    }
+
+    $availableStock = max(0, $product['stock_quantity'] - $cartQty);
+
+    }
+
 ?>
 
 <!DOCTYPE html>
@@ -29,9 +43,7 @@ if ($product_id) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details | Cafeteria Xpress</title>
-
-    <!-- Add your CSS styles here -->
+    <title>Product Details</title>
     <style>
         /* Product Page Styles */
         .pd-container {
@@ -41,10 +53,15 @@ if ($product_id) {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 40px;
+            align-items: flex-start;
         }
 
+        .pd-img {
+            display: flex;
+            justify-content: center; /* Center the image horizontally */
+        }
         .pd-img img {
-            width: 100%;
+            max-width: 90%;
             border-radius: 20px;
             box-shadow: 0 0 20px rgba(0,255,166,0.3);
         }
@@ -99,36 +116,37 @@ if ($product_id) {
 </head>
 <body>
 
-<!-- PAGE WRAPPER -->
-<div class="page-content">
-    <div class="pd-container">
+<div class="pd-container">
+    <div class="pd-img">
+        <img src="<?= $product['ImageURL'] ?>" alt="<?= $product['name'] ?>">
+    </div>
 
-        <!-- Product Image -->
-        <div class="pd-img">
-            <img src="<?= $product['ImageURL']; ?>" alt="<?= $product['name']; ?>">
-        </div>
+    <div>
+        <h1><?= $product['name'] ?></h1>
+        <div class="pd-price">RM <?= number_format($product['price'], 2) ?></div>
+        <p class="pd-desc"><?= $product['description'] ?></p>
 
-        <!-- Product Details -->
-        <div>
-            <h1><?= $product['name']; ?></h1>
+        <!-- Add to Cart Form -->
+        <form method="POST" action="add_to_cart.php">
+            <input type="hidden" name="product_id" value="<?= $product['ProductID'] ?>">
+            <label>Quantity: </label>
+            <input type="number" name="quantity" value="1" min="1" max="<?= $availableStock ?>"
+    <?= $availableStock <= 0 ? 'disabled' : '' ?> required>
+            <?php if ($availableStock > 0): ?>
+                <button class="pd-btn">Add to Cart</button>
+            <?php else: ?>
+                <button class="pd-btn pd-btn-secondary" disabled>
+                    Out of Stock
+                </button>
+            <?php endif; ?>
 
-            <!-- Price -->
-            <div class="pd-price">RM <?= number_format($product['price'], 2); ?></div>
+        </form>
 
-            <!-- Description -->
-            <p class="pd-desc"><?= $product['description']; ?></p>
-
-            <!-- Add to Cart Button -->
-            <button class="pd-btn">Add to Cart</button>
-
-            <!-- Back Button -->
-            <button class="pd-btn pd-btn-secondary" onclick="history.back()">Back</button>
-        </div>
-
+        <button class="pd-btn pd-btn-secondary" onclick="history.back()">Back</button>
     </div>
 </div>
 
-<?php include 'footer.php'; ?>
-
 </body>
 </html>
+
+<?php include 'footer.php'; ?>
