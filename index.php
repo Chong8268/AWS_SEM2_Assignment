@@ -138,6 +138,36 @@ if ($autoLogin) {
     margin-top: 15px;
     color: #00ffa6;
 }
+
+.cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.cat-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 120px;
+
+    background: linear-gradient(145deg, #151515, #0f0f0f);
+    border-radius: 16px;
+    text-decoration: none;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.1rem;
+
+    transition: all 0.25s ease;
+    box-shadow: 0 0 0 rgba(0,0,0,0);
+}
+
+.cat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0,255,166,0.15);
+    color: #00ffa6;
+}
+
 </style>
 
 <div class="page-content page-home">
@@ -160,12 +190,29 @@ if ($autoLogin) {
     <section class="categories">
         <h2>Popular Categories</h2>
         <div class="cat-grid">
-            <div class="cat-card"><h3>⛩ Rice & Meals</h3></div>
-            <div class="cat-card"><h3>🍗 Chicken</h3></div>
-            <div class="cat-card"><h3>🍝 Noodles</h3></div>
-            <div class="cat-card"><h3>🥤 Drinks</h3></div>
-            <div class="cat-card"><h3>🍰 Desserts</h3></div>
+
+            <a href="menu.php?category=Meals" class="cat-card">
+                <h3>⛩ Meals</h3>
+            </a>
+
+            <a href="menu.php?category=Chicken" class="cat-card">
+                <h3>🍗 Chicken</h3>
+            </a>
+
+            <a href="menu.php?category=Noodles" class="cat-card">
+                <h3>🍝 Noodles</h3>
+            </a>
+
+            <a href="menu.php?category=Drinks" class="cat-card">
+                <h3>🥤 Drinks</h3>
+            </a>
+
+            <a href="menu.php?category=Desserts" class="cat-card">
+                <h3>🍰 Desserts</h3>
+            </a>
+
         </div>
+
     </section>
 
 <?php include 'footer.php'; ?>

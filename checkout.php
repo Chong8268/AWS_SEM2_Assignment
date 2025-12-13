@@ -219,7 +219,7 @@ while ($row = $result->fetch_assoc()) {
     <div class="form-group">
         <label>Full Name *</label>
         <input type="text"
-               name="name"
+               name="full_name"
                required
                value="<?= htmlspecialchars($customer["Name"] ?? "") ?>">
     </div>
@@ -250,12 +250,12 @@ while ($row = $result->fetch_assoc()) {
 
     <div class="payment-group">
         <label class="payment-option">
-            <input type="radio" name="payment" value="COD" required>
+            <input type="radio" name="payment_method" value="COD" required>
             Cash on Delivery
         </label>
 
         <label class="payment-option">
-            <input type="radio" name="payment" value="Card" required>
+            <input type="radio" name="payment_method" value="Card" required>
             Credit / Debit Card
         </label>
     </div>

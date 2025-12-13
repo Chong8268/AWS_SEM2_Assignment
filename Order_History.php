@@ -1,76 +1,176 @@
-<?php include 'header.php'; ?>
+<?php
+session_start();
+include 'config.php';
+
+if (!isset($_SESSION["CustomerID"])) {
+    header("Location: login.php");
+    exit;
+}
+
+$customerID = $_SESSION["CustomerID"];
+$orderID = $_GET['order_id'] ?? '';
+
+if ($orderID === '') {
+    die("Invalid order ID.");
+}
+
+/* ---------- 验证订单属于当前用户 ---------- */
+$stmt = $conn->prepare("
+    SELECT OrderID, order_date, total_amount, status
+    FROM `order`
+    WHERE OrderID = ? AND CustomerID = ?
+");
+$stmt->bind_param("ss", $orderID, $customerID);
+$stmt->execute();
+$order = $stmt->get_result()->fetch_assoc();
+
+if (!$order) {
+    die("Order not found or unauthorized access.");
+}
+
+/* ---------- 读取订单历史 ---------- */
+$stmt = $conn->prepare("
+    SELECT *
+    FROM orderhistory
+    WHERE OrderID = ?
+    ORDER BY changed_at ASC
+");
+$stmt->bind_param("s", $orderID);
+$stmt->execute();
+$history = $stmt->get_result();
+?>
+
+<?php include "header.php"; ?>
 
 <style>
-.oh-wrap {
-    padding: 40px;
-    max-width: 1100px;
-    margin: auto;
+.order-history-wrap {
+    max-width: 900px;
+    margin: 60px auto;
+    padding: 0 20px;
 }
 
-.oh-title {
+.order-header {
+    margin-bottom: 30px;
+}
+
+.order-header h2 {
     font-size: 2rem;
-    margin-bottom: 20px;
+    margin-bottom: 8px;
 }
 
-.oh-table {
-    width: 100%;
-    border-collapse: collapse;
+.order-meta {
+    color: #aaa;
+    font-size: .95rem;
 }
 
-.oh-table th, .oh-table td {
-    padding: 14px;
-    border-bottom: 1px solid #333;
+/* Timeline */
+.timeline {
+    position: relative;
+    margin-top: 40px;
+    padding-left: 30px;
 }
 
-.oh-table th {
-    background: #181818;
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: #333;
 }
 
-.oh-status {
-    text-transform: capitalize;
-    font-weight: 700;
+.timeline-item {
+    position: relative;
+    margin-bottom: 30px;
 }
 
-.oh-btn {
-    padding: 8px 14px;
-    background: #00ffa6;
-    color: #000;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: 700;
-    display: inline-block;
+.timeline-dot {
+    position: absolute;
+    left: -1px;
+    top: 4px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #666;
 }
 
-.oh-btn:hover {
-    background: #00d98c;
+.timeline-content {
+    background: #161616;
+    border-radius: 12px;
+    padding: 18px 22px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.35);
+}
+
+/* Status colors */
+.status-PENDING { background:#ffd86b; color:#000; }
+.status-CONFIRMED { background:#00ffa6; color:#000; }
+.status-CANCELLED { background:#ff6b6b; color:#fff; }
+.status-COMPLETED { background:#4da3ff; color:#fff; }
+
+.status-badge {
+    display:inline-block;
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:.75rem;
+    font-weight:700;
+    margin-bottom:6px;
+}
+
+.timeline-time {
+    color:#aaa;
+    font-size:.85rem;
+    margin-top:6px;
 }
 </style>
 
 <div class="page-content">
-<div class="oh-wrap">
+<div class="order-history-wrap">
 
-    <h1 class="oh-title">Your Past Orders</h1>
+    <div class="order-header">
+        <h2>Order History</h2>
+        <div class="order-meta">
+            Order ID: <strong><?= htmlspecialchars($orderID) ?></strong><br>
+            Placed on <?= date("d M Y, H:i", strtotime($order['order_date'])) ?><br>
+            Total: RM <?= number_format($order['total_amount'], 2) ?>
+        </div>
+    </div>
 
-    <table class="oh-table">
-        <tr>
-            <th>Order ID</th>
-            <th>Date</th>
-            <th>Total (RM)</th>
-            <th>Status</th>
-            <th>Action</th>
-        </tr>
+    <?php if ($history->num_rows === 0): ?>
+        <p style="color:#bbb;">No history records found.</p>
+    <?php else: ?>
+        <div class="timeline">
 
-        <tr>
-            <td>#101</td>
-            <td>2025-03-10</td>
-            <td>18.90</td>
-            <td class="oh-status">delivered</td>
-            <td><a class="oh-btn" href="order_details.php?id=101">View</a></td>
-        </tr>
+        <?php while ($row = $history->fetch_assoc()): ?>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
 
-    </table>
+                <div class="timeline-content">
+                    <span class="status-badge status-<?= strtoupper($row['status']) ?>">
+                        <?= strtoupper($row['status']) ?>
+                    </span>
+
+                    <div>
+                        <?= htmlspecialchars($row['remark'] ?: 'Status updated') ?>
+                    </div>
+
+                    <div class="timeline-time">
+                        <?= date("d M Y, H:i:s", strtotime($row['changed_at'])) ?>
+                    </div>
+                </div>
+            </div>
+        <?php endwhile; ?>
+
+        </div>
+    <?php endif; ?>
+
+    <div style="margin-top:30px;">
+        <a href="my_orders.php" style="color:#00ffa6;text-decoration:none;">
+            ← Back to My Orders
+        </a>
+    </div>
 
 </div>
 </div>
 
-<?php include 'footer.php'; ?>
+<?php include "footer.php"; ?>

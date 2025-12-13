@@ -142,7 +142,8 @@ if (isset($_SESSION["CustomerID"])) {
     <ul>
         <li><a href="index.php">Home</a></li>
         <li><a href="menu.php">Menu</a></li>
-        <li><a href="menu_search.php">Order</a></li>
+        <li><a href="menu_search.php">Search</a></li>
+        
 
         <?php if (isset($_SESSION["CustomerID"])): ?>
             <!-- 🔹 Cart Button -->
@@ -154,7 +155,10 @@ if (isset($_SESSION["CustomerID"])) {
                     <?php endif; ?>
                 </a>
             </li>
+        <?php endif; ?>
+        <li><a href="my_orders.php">My Orders</a></li>
 
+            <?php if (isset($_SESSION["CustomerID"])): ?>
             <li>
                 <a href="logout.php" style="color:#ff6b6b;font-weight:600;">
                     Logout
