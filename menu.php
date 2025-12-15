@@ -144,10 +144,14 @@
 
         // Query products based on selected category or all if no category selected
         if ($category) {
-            $sql = "SELECT * FROM Product WHERE categories = ?";
+            $sql = "SELECT * FROM product 
+                    WHERE categories = ? 
+                    AND status = 'ACTIVE'";
         } else {
-            $sql = "SELECT * FROM Product";
+            $sql = "SELECT * FROM product 
+                    WHERE status = 'ACTIVE'";
         }
+
 
         $stmt = $conn->prepare($sql);
         if ($category) {

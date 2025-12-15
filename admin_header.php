@@ -1,4 +1,12 @@
 <?php
+session_start();
+include 'config.php';
+
+if (!isset($_SESSION['StaffID'])) {
+    header("Location: admin_login.php");
+    exit;
+}
+
 // admin_header.php
 ?>
 <!DOCTYPE html>
@@ -80,25 +88,7 @@ body {
 }
 
 
-/* ================================
-   ADMIN BUTTON
-================================ */
-.admin-btn {
-    display: inline-block;
-    padding: 12px 18px;
-    background: #00ffa6;
-    color: #000;
-    border: 0;
-    border-radius: 10px;
-    font-weight: 700;
-    cursor: pointer;
-    text-decoration: none;
-    transition: 0.3s;
-}
 
-.admin-btn:hover {
-    background: #00d98c;
-}
 
 /* ================================
    ADMIN FORM
@@ -213,6 +203,76 @@ body {
 .status.completed { background:#00ffa6; color:#000; }
 .status.cancelled { background:#ff4444; color:#fff; }
 
+/* ===== ADMIN DASHBOARD ENHANCEMENT ===== */
+
+.admin-wrap {
+    max-width: 1100px;
+    margin: 60px auto;
+    padding: 0 20px;
+}
+
+/* GRID */
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 26px;
+}
+
+/* CARD BASE */
+.admin-card {
+    background: linear-gradient(145deg, #1a1a1a, #111);
+    border-radius: 16px;
+    padding: 26px;
+    text-align: center;
+
+    border: 1px solid rgba(0, 255, 166, 0.15);
+    box-shadow:
+        0 12px 30px rgba(0,0,0,.5),
+        inset 0 0 0 rgba(0,255,166,0);
+
+    transition: all .25s ease;
+}
+
+/* CARD HOVER */
+.admin-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0, 255, 166, 0.6);
+    box-shadow:
+        0 16px 40px rgba(0,0,0,.65),
+        0 0 18px rgba(0,255,166,.25);
+}
+
+/* STAT NUMBER */
+.admin-stat {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: #00ffa6;
+    margin-bottom: 6px;
+}
+
+/* CARD TEXT */
+.admin-card div {
+    font-size: 1rem;
+    color: #ddd;
+}
+
+/* BUTTON CARD */
+.admin-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #00ffa6;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.admin-btn:hover {
+    color: #000;
+    background: #00ffa6;
+}
+
 </style>
 
 </head>
@@ -226,11 +286,10 @@ body {
     <div class="admin-logo">ADMIN PANEL</div>
 
     <ul>
-        <li><a href="admin.php">Dashboard</a></li>
         <li><a href="admin_orders.php">Orders</a></li>
         <li><a href="admin_products.php">Products</a></li>
-        <li><a href="Delivery_Status.php">Delivery</a></li>
+        <li><a href="admin_delivery_status.php">Delivery</a></li>
     </ul>
 
-    <a class="admin-logout" href="admin_login.php">Logout</a>
+    <a class="admin-logout" href="admin_logout.php">Logout</a>
 </nav>

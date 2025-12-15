@@ -1,11 +1,20 @@
-<?php include 'admin_header.php'; ?>
+<?php include 'admin_header.php'; 
+$result = $conn->query("
+    SELECT *
+    FROM product
+    ORDER BY name
+");
+
+$products = $result->fetch_all(MYSQLI_ASSOC);
+?>
 
 <div class="admin-page">
 <div class="admin-wrap">
 
     <h1>Product Management</h1>
 
-    <a href="admin_addproduct.php" class="admin-btn-sm" 
+    <a href="admin_addproduct.php"
+       class="admin-btn-sm"
        style="display:inline-block; margin-bottom:20px;">
        + Add Product
     </a>
@@ -17,6 +26,7 @@
             <th>Price (RM)</th>
             <th>Stock</th>
             <th>Category</th>
+            <th>Status</th>
             <th>Action</th>
         </tr>
 
@@ -29,14 +39,30 @@
             <td><?= htmlspecialchars($p['categories']) ?></td>
 
             <td>
-                <a class="admin-btn-sm" 
-                   href="admin_edit_product.php?id=<?= $p['ProductID'] ?>">Edit</a>
+                <span class="status <?= strtolower($p['status']) ?>">
+                    <?= $p['status'] ?>
+                </span>
+            </td>
 
-                <a class="admin-btn-danger" 
-                   href="admin_delete_product.php?id=<?= $p['ProductID'] ?>"
-                   onclick="return confirm('Delete this product?');">
-                   Delete
+            <td>
+                <a class="admin-btn-sm"
+                   href="admin_edit_product.php?id=<?= $p['ProductID'] ?>">
+                   Edit
                 </a>
+
+                <form method="post"
+                      action="admin_toggle_product_status.php"
+                      style="display:inline;"
+                      onsubmit="return confirm('Confirm change product status?');">
+                    <input type="hidden" name="product_id" value="<?= $p['ProductID'] ?>">
+                    <input type="hidden" name="current_status" value="<?= $p['status'] ?>">
+
+                    <?php if ($p['status'] === 'ACTIVE'): ?>
+                        <button class="admin-btn-danger">Deactivate</button>
+                    <?php else: ?>
+                        <button class="admin-btn-sm">Activate</button>
+                    <?php endif; ?>
+                </form>
             </td>
         </tr>
         <?php endforeach; ?>

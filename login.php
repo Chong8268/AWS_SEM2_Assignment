@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $password = $_POST["password"];
     $remember = isset($_POST["remember"]);
 
-    $stmt = $conn->prepare("SELECT * FROM Customer WHERE Phone = ? OR Name = ?");
+    $stmt = $conn->prepare("SELECT * FROM customer WHERE Phone = ? OR Name = ?");
     $stmt->bind_param("ss", $user, $user);
     $stmt->execute();
     $result = $stmt->get_result();

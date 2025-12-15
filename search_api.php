@@ -4,7 +4,10 @@ include "config.php";
 $keyword  = isset($_POST["keyword"]) ? $_POST["keyword"] : "";
 $category = isset($_POST["category"]) ? $_POST["category"] : "";
 
-$sql = "SELECT * FROM product WHERE 1";
+$sql = "SELECT *
+FROM product
+WHERE status = 'ACTIVE'
+";
 
 if ($keyword !== "") {
     $k = "%$keyword%";
