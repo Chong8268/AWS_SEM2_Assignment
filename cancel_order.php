@@ -42,6 +42,14 @@ try {
     $stmt->bind_param("s", $orderID);
     $stmt->execute();
 
+    $stmt = $conn->prepare("
+        UPDATE `deliveryinfo`
+        SET status = 'CANCELLED'
+        WHERE OrderID = ?
+    ");
+    $stmt->bind_param("s", $orderID);
+    $stmt->execute();
+
     // 3️⃣ 记录 order history
     $historyID = genID("HIS");
 

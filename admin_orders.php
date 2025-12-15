@@ -2,6 +2,8 @@
 include 'admin_header.php';
 include 'config.php';
 
+$isAdmin = isset($_SESSION['StaffID']) && $_SESSION['Role'] === 'ADMIN';
+
 $result = $conn->query("
     SELECT 
         o.OrderID,
@@ -68,7 +70,10 @@ $actionText = [
         <?php if (isset($actionText[$row['status']])): ?>
         <form method="post" action="update_order_status.php" style="display:inline;">
             <input type="hidden" name="order_id" value="<?= $row['OrderID'] ?>">
-            <button class="admin-btn-sm"><?= $actionText[$row['status']] ?></button>
+            <!-- Disable button if not admin -->
+            <button class="admin-btn-sm" <?= !$isAdmin ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : '' ?>>
+                <?= $actionText[$row['status']] ?>
+            </button>
         </form>
         <?php endif; ?>
     </td>

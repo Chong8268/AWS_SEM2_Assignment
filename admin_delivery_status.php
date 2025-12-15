@@ -70,7 +70,7 @@ if ($result) {
 
                     <?php if (
                         $d['order_status'] === 'READY_TO_PICKUP' &&
-                        $d['delivery_status'] === 'PENDING'
+                        $d['delivery_status'] === 'READY_TO_PICKUP'
                     ): ?>
                         <form method="post"
                               action="admin_delivery_update.php"

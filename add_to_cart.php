@@ -61,7 +61,7 @@ $stmt = $conn->prepare("
     SELECT
         p.stock_quantity - IFNULL(SUM(ci.quantity), 0) AS available,
         p.price
-    FROM Product p
+    FROM product p
     LEFT JOIN cartitems ci
         ON p.ProductID = ci.ProductID
     LEFT JOIN cart c
