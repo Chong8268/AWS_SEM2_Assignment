@@ -11,9 +11,10 @@ $deliveryId = $_POST['delivery_id'] ?? '';
 $action     = $_POST['action'] ?? '';
 
 $stmt = $conn->prepare("
-    SELECT OrderID, status
-    FROM deliveryinfo
-    WHERE DeliveryID = ?
+    SELECT d.OrderID, d.status, p.method as payment_method
+    FROM deliveryinfo d
+    JOIN payment p ON p.OrderID = d.OrderID
+    WHERE d.DeliveryID = ?
 ");
 $stmt->bind_param("s", $deliveryId);
 $stmt->execute();
@@ -46,12 +47,50 @@ if ($action === 'pickup' && $delivery['status'] === 'READY_TO_PICKUP') {
 }
 
 if ($action === 'arrive' && $delivery['status'] === 'DELIVERING') {
-    // Update delivery status
+    $isCOD = (strtoupper($delivery['payment_method']) === 'COD');
+    
+    if ($isCOD) {
+        $stmt = $conn->prepare("UPDATE deliveryinfo SET status='ARRIVE' WHERE DeliveryID=?");
+        $stmt->bind_param("s", $deliveryId);
+        $stmt->execute();
+        
+        $stmt = $conn->prepare("UPDATE `order` SET status='ARRIVE' WHERE OrderID=?");
+        $stmt->bind_param("s", $delivery['OrderID']);
+        $stmt->execute();
+        
+        $historyId = 'HIS_' . date('YmdHis') . '_' . bin2hex(random_bytes(4));
+        $staffId = $_SESSION['StaffID'];
+        $remark = "Rider has arrived at destination. Waiting for payment.";
+        
+        $stmt = $conn->prepare("INSERT INTO orderhistory (HistoryID, OrderID, status, changed_by_staff, changed_at, remark) VALUES (?, ?, 'ARRIVE', ?, NOW(), ?)");
+        $stmt->bind_param("ssss", $historyId, $delivery['OrderID'], $staffId, $remark);
+        $stmt->execute();
+    } else {
+        $stmt = $conn->prepare("UPDATE deliveryinfo SET status='COMPLETED' WHERE DeliveryID=?");
+        $stmt->bind_param("s", $deliveryId);
+        $stmt->execute();
+        
+        $stmt = $conn->prepare("UPDATE `order` SET status='COMPLETED' WHERE OrderID=?");
+        $stmt->bind_param("s", $delivery['OrderID']);
+        $stmt->execute();
+        
+        $historyId = 'HIS_' . date('YmdHis') . '_' . bin2hex(random_bytes(4));
+        $staffId = $_SESSION['StaffID'];
+        $remark = "Delivery completed successfully!";
+        
+        $stmt = $conn->prepare("INSERT INTO orderhistory (HistoryID, OrderID, status, changed_by_staff, changed_at, remark) VALUES (?, ?, 'COMPLETED', ?, NOW(), ?)");
+        $stmt->bind_param("ssss", $historyId, $delivery['OrderID'], $staffId, $remark);
+        $stmt->execute();
+    }
+}
+
+if ($action === 'complete' && $delivery['status'] === 'ARRIVE') {
+    // Update delivery status to COMPLETED
     $stmt = $conn->prepare("UPDATE deliveryinfo SET status='COMPLETED' WHERE DeliveryID=?");
     $stmt->bind_param("s", $deliveryId);
     $stmt->execute();
     
-    // Update order status
+    // Update order status to COMPLETED
     $stmt = $conn->prepare("UPDATE `order` SET status='COMPLETED' WHERE OrderID=?");
     $stmt->bind_param("s", $delivery['OrderID']);
     $stmt->execute();
@@ -59,7 +98,7 @@ if ($action === 'arrive' && $delivery['status'] === 'DELIVERING') {
     // Insert into order history
     $historyId = 'HIS_' . date('YmdHis') . '_' . bin2hex(random_bytes(4));
     $staffId = $_SESSION['StaffID'];
-    $remark = "Your Meals Have Arrive!";
+    $remark = "Payment received. Order completed successfully.";
     
     $stmt = $conn->prepare("INSERT INTO orderhistory (HistoryID, OrderID, status, changed_by_staff, changed_at, remark) VALUES (?, ?, 'COMPLETED', ?, NOW(), ?)");
     $stmt->bind_param("ssss", $historyId, $delivery['OrderID'], $staffId, $remark);

@@ -22,6 +22,60 @@ if ($fullName === "" || $phone === "" || $address === "" || $paymentMethod === "
     die("Invalid checkout data.");
 }
 
+if ($paymentMethod === "Card") {
+    $cardName = trim($_POST["card_name"] ?? "");
+    $cardNumber = trim(str_replace(' ', '', $_POST["card_number"] ?? ""));
+    $cardExpiry = trim($_POST["card_expiry"] ?? "");
+    $cardCVV = trim($_POST["card_cvv"] ?? "");
+    
+    // Validate card fields
+    if (strlen($cardName) < 3) {
+        die("Invalid cardholder name.");
+    }
+    
+    if (!preg_match('/^\d{16}$/', $cardNumber)) {
+        die("Invalid card number.");
+    }
+    
+    if (!preg_match('/^\d{2}\/\d{2}$/', $cardExpiry)) {
+        die("Invalid expiry date format.");
+    }
+    
+    // Validate expiry date is not in the past
+    list($month, $year) = explode('/', $cardExpiry);
+    $expiryDate = new DateTime("20$year-$month-01");
+    $now = new DateTime();
+    
+    if ($expiryDate < $now) {
+        die("Card has expired.");
+    }
+    
+    if (!preg_match('/^\d{3,4}$/', $cardCVV)) {
+        die("Invalid CVV.");
+    }
+} elseif ($paymentMethod === "Online Banking") {
+    $bankName = trim($_POST["bank_name"] ?? "");
+    $accountName = trim($_POST["account_name"] ?? "");
+    $accountNumber = trim(str_replace(' ', '', $_POST["account_number"] ?? ""));
+    
+    if ($bankName === "") {
+        die("Please select a bank.");
+    }
+    
+    if (strlen($accountName) < 3) {
+        die("Invalid account holder name.");
+    }
+    
+    if (!preg_match('/^\d{8,20}$/', $accountNumber)) {
+        die("Invalid account number. Must be 8-20 digits.");
+    }
+    
+    $allowedBanks = ['Maybank', 'CIMB Bank', 'Public Bank', 'RHB Bank', 'Hong Leong Bank', 'AmBank', 'Bank Islam', 'Affin Bank'];
+    if (!in_array($bankName, $allowedBanks)) {
+        die("Invalid bank selection.");
+    }
+}
+
 /* ---------- 生成唯一 ID ---------- */
 function genID($prefix) {
     return $prefix . bin2hex(random_bytes(8)) . time();
@@ -137,13 +191,55 @@ try {
     $stmt->execute();
 
     /* ---------- 6️⃣ payment ---------- */
-    $stmt = $conn->prepare("
-        INSERT INTO payment
-        (PaymentID, OrderID, amount, method)
-        VALUES (?, ?, ?, ?)
-    ");
-    $stmt->bind_param("ssds", $paymentID, $orderID, $total, $paymentMethod);
+    if ($paymentMethod === "Card") {
+        // In production, you should NEVER store full card details
+        // Use a payment gateway like Stripe instead
+        $last4 = substr($cardNumber, -4);
+        
+        $stmt = $conn->prepare("
+            INSERT INTO payment
+            (PaymentID, OrderID, amount, method, account_last4)
+            VALUES (?, ?, ?, 'Card', ?)
+        ");
+        $stmt->bind_param("ssds", $paymentID, $orderID, $total, $last4);
+    } elseif ($paymentMethod === "Online Banking") {
+        $last4 = substr($accountNumber, -4);
+        
+        $stmt = $conn->prepare("
+            INSERT INTO payment
+            (PaymentID, OrderID, amount, method, account_last4)
+            VALUES (?, ?, ?, ?, ?)
+        ");
+        $paymentMethodWithBank = "Online Banking - " . $bankName;
+        $stmt->bind_param("ssdss", $paymentID, $orderID, $total, $paymentMethodWithBank, $last4);
+    } else {
+        $stmt = $conn->prepare("
+            INSERT INTO payment
+            (PaymentID, OrderID, amount, method)
+            VALUES (?, ?, ?, ?)
+        ");
+        $stmt->bind_param("ssds", $paymentID, $orderID, $total, $paymentMethod);
+    }
     $stmt->execute();
+
+    if ($paymentMethod !== "COD") {
+        $historyPaymentID = genID("PHIST_");
+        $paymentRemark = "Payment received via " . $paymentMethod;
+        
+        $stmt = $conn->prepare("
+            INSERT INTO paymenthistory
+            (HistoryID, PaymentID, OrderID, transaction_type, amount, method, account_last4, status, remark)
+            VALUES (?, ?, ?, 'PAYMENT', ?, ?, ?, 'SUCCESS', ?)
+        ");
+        
+        if ($paymentMethod === "Card") {
+            $stmt->bind_param("sssdsss", $historyPaymentID, $paymentID, $orderID, $total, $paymentMethod, $last4, $paymentRemark);
+        } elseif ($paymentMethod === "Online Banking") {
+            $stmt->bind_param("sssdsss", $historyPaymentID, $paymentID, $orderID, $total, $paymentMethodWithBank, $last4, $paymentRemark);
+        }
+        
+        $stmt->execute();
+    }
 
     /* ---------- 7️⃣ 清空 cart ---------- */
     $stmt = $conn->prepare("DELETE FROM cartitems WHERE CartID = ?");
@@ -157,5 +253,6 @@ try {
 
 } catch (Exception $e) {
     $conn->rollback();
-    die("Checkout failed: " . $e->getMessage());
+    header("Location: checkout.php?error=" . urlencode($e->getMessage()));
+    exit;
 }

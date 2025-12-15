@@ -122,7 +122,8 @@ while ($row = $result->fetch_assoc()) {
 
 /* Inputs */
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
     width: 100%;
     padding: 14px 14px;
     background: #0f0f0f;
@@ -139,7 +140,8 @@ while ($row = $result->fetch_assoc()) {
 }
 
 .form-group input:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group select:focus {
     outline: none;
     border-color: #00ffa6;
     box-shadow: 0 0 0 2px rgba(0,255,166,0.15);
@@ -172,6 +174,52 @@ while ($row = $result->fetch_assoc()) {
     transform: scale(1.15);
 }
 
+/* Added credit card fields styling */
+.card-details {
+    display: none;
+    margin-top: 20px;
+    padding: 20px;
+    background: #0f0f0f;
+    border: 1px solid #333;
+    border-radius: 12px;
+}
+
+.card-details.active {
+    display: block;
+}
+
+.card-row {
+    display: flex;
+    gap: 15px;
+}
+
+.card-row .form-group {
+    flex: 1;
+}
+
+.form-group.error input,
+.form-group.error textarea,
+.form-group.error select {
+    border-color: #ff4444;
+}
+
+.form-group .error-msg {
+    color: #ff4444;
+    font-size: 0.8rem;
+    margin-top: 4px;
+    display: none;
+}
+
+.form-group.error .error-msg {
+    display: block;
+}
+
+.form-group.success input,
+.form-group.success textarea,
+.form-group.success select {
+    border-color: #00ffa6;
+}
+
 /* ===== Place Order Button ===== */
 .checkout-btn {
     width: 100%;
@@ -193,6 +241,43 @@ while ($row = $result->fetch_assoc()) {
     box-shadow: 0 12px 30px rgba(0,255,166,0.5);
 }
 
+/* ===== Toast Notification ===== */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #ff4444;
+    color: white;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    z-index: 9999;
+    max-width: 400px;
+    animation: slideIn 0.3s ease-out;
+}
+
+.toast.success {
+    background: #00ffa6;
+    color: #000;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.toast-close {
+    margin-left: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    float: right;
+}
 </style>
 
 <div class="page-content">
@@ -258,9 +343,100 @@ while ($row = $result->fetch_assoc()) {
             <input type="radio" name="payment_method" value="Card" required>
             Credit / Debit Card
         </label>
+        
+        <!-- Added Online Banking payment option -->
+        <label class="payment-option">
+            <input type="radio" name="payment_method" value="Online Banking" required>
+            Online Banking
+        </label>
     </div>
 </div>
 
+<!-- Added credit card fields -->
+<div class="card-details" id="cardDetails">
+    <h4 style="color: #00ffa6; margin-bottom: 20px;">Card Information</h4>
+    
+    <div class="form-group">
+        <label>Cardholder Name *</label>
+        <input type="text" 
+               name="card_name" 
+               id="cardName"
+               placeholder="John Doe">
+        <span class="error-msg">Please enter the cardholder name</span>
+    </div>
+
+    <div class="form-group">
+        <label>Card Number *</label>
+        <input type="text" 
+               name="card_number" 
+               id="cardNumber"
+               placeholder="1234 5678 9012 3456"
+               maxlength="19">
+        <span class="error-msg">Please enter a valid 16-digit card number</span>
+    </div>
+
+    <div class="card-row">
+        <div class="form-group">
+            <label>Expiry Date *</label>
+            <input type="text" 
+                   name="card_expiry" 
+                   id="cardExpiry"
+                   placeholder="MM/YY"
+                   maxlength="5">
+            <span class="error-msg">Invalid expiry date (MM/YY)</span>
+        </div>
+
+        <div class="form-group">
+            <label>CVV *</label>
+            <input type="text" 
+                   name="card_cvv" 
+                   id="cardCVV"
+                   placeholder="123"
+                   maxlength="4">
+            <span class="error-msg">CVV must be 3-4 digits</span>
+        </div>
+    </div>
+</div>
+
+<!-- Added online banking fields -->
+<div class="card-details" id="bankingDetails">
+    <h4 style="color: #00ffa6; margin-bottom: 20px;">Online Banking Information</h4>
+    
+    <div class="form-group">
+        <label>Select Bank *</label>
+        <select name="bank_name" id="bankName">
+            <option value="">-- Choose your bank --</option>
+            <option value="Maybank">Maybank</option>
+            <option value="CIMB Bank">CIMB Bank</option>
+            <option value="Public Bank">Public Bank</option>
+            <option value="RHB Bank">RHB Bank</option>
+            <option value="Hong Leong Bank">Hong Leong Bank</option>
+            <option value="AmBank">AmBank</option>
+            <option value="Bank Islam">Bank Islam</option>
+            <option value="Affin Bank">Affin Bank</option>
+        </select>
+        <span class="error-msg">Please select your bank</span>
+    </div>
+
+    <div class="form-group">
+        <label>Account Holder Name *</label>
+        <input type="text" 
+               name="account_name" 
+               id="accountName"
+               placeholder="John Doe">
+        <span class="error-msg">Please enter the account holder name</span>
+    </div>
+
+    <div class="form-group">
+        <label>Account Number *</label>
+        <input type="text" 
+               name="account_number" 
+               id="accountNumber"
+               placeholder="1234567890"
+               maxlength="20">
+        <span class="error-msg">Please enter a valid account number (8-20 digits)</span>
+    </div>
+</div>
 
     <button class="checkout-btn">Place Order</button>
 
@@ -268,5 +444,312 @@ while ($row = $result->fetch_assoc()) {
 
 </div>
 </div>
+
+<!-- Added JavaScript validation -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
+    const cardDetails = document.getElementById('cardDetails');
+    const bankingDetails = document.getElementById('bankingDetails');
+    const form = document.querySelector('.checkout-form');
+    
+    const cardName = document.getElementById('cardName');
+    const cardNumber = document.getElementById('cardNumber');
+    const cardExpiry = document.getElementById('cardExpiry');
+    const cardCVV = document.getElementById('cardCVV');
+    
+    const bankName = document.getElementById('bankName');
+    const accountName = document.getElementById('accountName');
+    const accountNumber = document.getElementById('accountNumber');
+
+    // Show/hide payment details based on payment method
+    paymentRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === 'Card') {
+                cardDetails.classList.add('active');
+                bankingDetails.classList.remove('active');
+                // Make card fields required
+                cardName.required = true;
+                cardNumber.required = true;
+                cardExpiry.required = true;
+                cardCVV.required = true;
+                // Remove banking fields required
+                bankName.required = false;
+                accountName.required = false;
+                accountNumber.required = false;
+            } else if (this.value === 'Online Banking') {
+                bankingDetails.classList.add('active');
+                cardDetails.classList.remove('active');
+                // Make banking fields required
+                bankName.required = true;
+                accountName.required = true;
+                accountNumber.required = true;
+                // Remove card fields required
+                cardName.required = false;
+                cardNumber.required = false;
+                cardExpiry.required = false;
+                cardCVV.required = false;
+            } else {
+                cardDetails.classList.remove('active');
+                bankingDetails.classList.remove('active');
+                // Remove required from all payment fields
+                cardName.required = false;
+                cardNumber.required = false;
+                cardExpiry.required = false;
+                cardCVV.required = false;
+                bankName.required = false;
+                accountName.required = false;
+                accountNumber.required = false;
+            }
+        });
+    });
+
+    // Format card number with spaces
+    cardNumber.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\s/g, '');
+        let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+        e.target.value = formattedValue;
+        validateCardNumber();
+    });
+
+    // Format expiry date
+    cardExpiry.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+            value = value.slice(0, 2) + '/' + value.slice(2, 4);
+        }
+        e.target.value = value;
+        validateExpiry();
+    });
+
+    // Only allow numbers in CVV
+    cardCVV.addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/\D/g, '');
+        validateCVV();
+    });
+
+    // Validate cardholder name
+    cardName.addEventListener('blur', function() {
+        validateCardName();
+    });
+
+    // Validation functions
+    function validateCardName() {
+        const value = cardName.value.trim();
+        const formGroup = cardName.closest('.form-group');
+        
+        if (value.length < 3) {
+            formGroup.classList.add('error');
+            formGroup.classList.remove('success');
+            return false;
+        } else {
+            formGroup.classList.remove('error');
+            formGroup.classList.add('success');
+            return true;
+        }
+    }
+
+    function validateCardNumber() {
+        const value = cardNumber.value.replace(/\s/g, '');
+        const formGroup = cardNumber.closest('.form-group');
+        
+        // Check if it's 16 digits and passes Luhn algorithm
+        if (value.length === 16 && /^\d{16}$/.test(value) && luhnCheck(value)) {
+            formGroup.classList.remove('error');
+            formGroup.classList.add('success');
+            return true;
+        } else {
+            formGroup.classList.add('error');
+            formGroup.classList.remove('success');
+            return false;
+        }
+    }
+
+    function validateExpiry() {
+        const value = cardExpiry.value;
+        const formGroup = cardExpiry.closest('.form-group');
+        
+        if (!/^\d{2}\/\d{2}$/.test(value)) {
+            formGroup.classList.add('error');
+            formGroup.classList.remove('success');
+            return false;
+        }
+
+        const [month, year] = value.split('/').map(num => parseInt(num));
+        const now = new Date();
+        const currentYear = now.getFullYear() % 100;
+        const currentMonth = now.getMonth() + 1;
+
+        if (month < 1 || month > 12) {
+            formGroup.classList.add('error');
+            formGroup.classList.remove('success');
+            return false;
+        }
+
+        if (year < currentYear || (year === currentYear && month < currentMonth)) {
+            formGroup.classList.add('error');
+            formGroup.classList.remove('success');
+            return false;
+        }
+
+        formGroup.classList.remove('error');
+        formGroup.classList.add('success');
+        return true;
+    }
+
+    function validateCVV() {
+        const value = cardCVV.value;
+        const formGroup = cardCVV.closest('.form-group');
+        
+        if (value.length >= 3 && value.length <= 4 && /^\d+$/.test(value)) {
+            formGroup.classList.remove('error');
+            formGroup.classList.add('success');
+            return true;
+        } else {
+            formGroup.classList.add('error');
+            formGroup.classList.remove('success');
+            return false;
+        }
+    }
+
+    // Only allow numbers and spaces in account number
+    accountNumber.addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/[^\d\s]/g, '');
+        validateAccountNumber();
+    });
+
+    // Validate bank selection
+    bankName.addEventListener('change', function() {
+        validateBankName();
+    });
+
+    // Validate account name
+    accountName.addEventListener('blur', function() {
+        validateAccountName();
+    });
+
+    function validateBankName() {
+        const value = bankName.value;
+        const formGroup = bankName.closest('.form-group');
+        
+        if (value === '') {
+            formGroup.classList.add('error');
+            formGroup.classList.remove('success');
+            return false;
+        } else {
+            formGroup.classList.remove('error');
+            formGroup.classList.add('success');
+            return true;
+        }
+    }
+
+    function validateAccountName() {
+        const value = accountName.value.trim();
+        const formGroup = accountName.closest('.form-group');
+        
+        if (value.length < 3) {
+            formGroup.classList.add('error');
+            formGroup.classList.remove('success');
+            return false;
+        } else {
+            formGroup.classList.remove('error');
+            formGroup.classList.add('success');
+            return true;
+        }
+    }
+
+    function validateAccountNumber() {
+        const value = accountNumber.value.replace(/\s/g, '');
+        const formGroup = accountNumber.closest('.form-group');
+        
+        // Account numbers are typically 8-20 digits
+        if (value.length >= 8 && value.length <= 20 && /^\d+$/.test(value)) {
+            formGroup.classList.remove('error');
+            formGroup.classList.add('success');
+            return true;
+        } else {
+            formGroup.classList.add('error');
+            formGroup.classList.remove('success');
+            return false;
+        }
+    }
+
+    // Form submission validation
+    form.addEventListener('submit', function(e) {
+        const selectedPayment = document.querySelector('input[name="payment_method"]:checked');
+        
+        if (selectedPayment && selectedPayment.value === 'Card') {
+            let isValid = true;
+            
+            if (!validateCardName()) isValid = false;
+            if (!validateCardNumber()) isValid = false;
+            if (!validateExpiry()) isValid = false;
+            if (!validateCVV()) isValid = false;
+            
+            if (!isValid) {
+                e.preventDefault();
+                showToast('Please fix the card information errors before proceeding.');
+                return false;
+            }
+        } else if (selectedPayment && selectedPayment.value === 'Online Banking') {
+            let isValid = true;
+            
+            if (!validateBankName()) isValid = false;
+            if (!validateAccountName()) isValid = false;
+            if (!validateAccountNumber()) isValid = false;
+            
+            if (!isValid) {
+                e.preventDefault();
+                showToast('Please fix the banking information errors before proceeding.');
+                return false;
+            }
+        }
+    });
+});
+
+function showToast(message, type = 'error') {
+    const toast = document.createElement('div');
+    toast.className = 'toast' + (type === 'success' ? ' success' : '');
+    toast.innerHTML = `
+        ${message}
+        <span class="toast-close" onclick="this.parentElement.remove()">×</span>
+    `;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 5000);
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+const errorMsg = urlParams.get('error');
+if (errorMsg) {
+    showToast(errorMsg);
+    // Remove error from URL without reload
+    window.history.replaceState({}, document.title, window.location.pathname);
+}
+
+function luhnCheck(cardNumber) {
+    let sum = 0;
+    let isEven = false;
+    
+    // Loop through values starting from the rightmost digit
+    for (let i = cardNumber.length - 1; i >= 0; i--) {
+        let digit = parseInt(cardNumber.charAt(i));
+        
+        if (isEven) {
+            digit *= 2;
+            if (digit > 9) {
+                digit -= 9;
+            }
+        }
+        
+        sum += digit;
+        isEven = !isEven;
+    }
+    
+    return (sum % 10) === 0;
+}
+</script>
 
 <?php include 'footer.php'; ?>

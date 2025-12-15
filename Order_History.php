@@ -165,7 +165,7 @@ $history = $stmt->get_result();
     <?php endif; ?>
 
     <div style="margin-top:30px;">
-        <a href="my_orders.php" style="color:#00ffa6;text-decoration:none;">
+        <a href="all_history.php" style="color:#00ffa6;text-decoration:none;">
             ← Back to My Orders
         </a>
     </div>

@@ -3,23 +3,22 @@ include 'admin_header.php';
 include 'config.php';
 
 /* =======================
-   FETCH DELIVERY + ORDER STATUS
+   FETCH DELIVERY + ORDER STATUS + PAYMENT METHOD
    ======================= */
 $sql = "
     SELECT 
         d.DeliveryID,
         d.OrderID,
         d.status AS delivery_status,
-        o.status AS order_status,
         d.receiver_name,
         d.receiver_phone,
-        d.address
+        d.address,
+        p.method as payment_method
     FROM deliveryinfo d
-    JOIN `order` o ON o.OrderID = d.OrderID
+    LEFT JOIN payment p ON p.OrderID = d.OrderID
     WHERE d.status NOT IN ('COMPLETED', 'CANCELLED')
     ORDER BY d.DeliveryID DESC
 ";
-
 
 $result = $conn->query($sql);
 
@@ -43,7 +42,7 @@ if ($result) {
             <th>Receiver</th>
             <th>Phone</th>
             <th>Address</th>
-            <th>Order Status</th>
+            <th>Payment Method</th>
             <th>Delivery Status</th>
             <th>Action</th>
         </tr>
@@ -56,22 +55,26 @@ if ($result) {
             </tr>
         <?php else: ?>
             <?php foreach ($deliveries as $d): ?>
+            <?php $isCOD = (strtoupper($d['payment_method']) === 'COD'); ?>
             <tr>
                 <td><?= $d['DeliveryID'] ?></td>
                 <td>#<?= $d['OrderID'] ?></td>
                 <td><?= htmlspecialchars($d['receiver_name']) ?></td>
                 <td><?= htmlspecialchars($d['receiver_phone']) ?></td>
                 <td><?= htmlspecialchars($d['address']) ?></td>
-                <td><?= $d['order_status'] ?></td>
+                <td>
+                    <?php if ($isCOD): ?>
+                        <span class="status-badge pending">COD</span>
+                    <?php else: ?>
+                        <span class="status-badge completed"><?= htmlspecialchars($d['payment_method']) ?></span>
+                    <?php endif; ?>
+                </td>
                 <td><?= $d['delivery_status'] ?></td>
 
                 <td>
                 <?php if ($_SESSION['Role'] === 'RIDER'): ?>
 
-                    <?php if (
-                        $d['order_status'] === 'READY_TO_PICKUP' &&
-                        $d['delivery_status'] === 'READY_TO_PICKUP'
-                    ): ?>
+                    <?php if ($d['delivery_status'] === 'READY_TO_PICKUP'): ?>
                         <form method="post"
                               action="admin_delivery_update.php"
                               style="display:inline;">
@@ -79,7 +82,7 @@ if ($result) {
                                    value="<?= $d['DeliveryID'] ?>">
                             <input type="hidden" name="action" value="pickup">
                             <button class="admin-btn-sm">
-                                🚴 Pickup
+                                Pickup
                             </button>
                         </form>
 
@@ -91,12 +94,24 @@ if ($result) {
                                    value="<?= $d['DeliveryID'] ?>">
                             <input type="hidden" name="action" value="arrive">
                             <button class="admin-btn-sm">
-                                📍 Arrived
+                                Arrived
+                            </button>
+                        </form>
+
+                    <?php elseif ($d['delivery_status'] === 'ARRIVE' && $isCOD): ?>
+                        <form method="post"
+                              action="admin_delivery_update.php"
+                              style="display:inline;">
+                            <input type="hidden" name="delivery_id"
+                                   value="<?= $d['DeliveryID'] ?>">
+                            <input type="hidden" name="action" value="complete">
+                            <button class="admin-btn-sm" style="background: #10b981;">
+                                Confirm Payment
                             </button>
                         </form>
 
                     <?php else: ?>
-                        <span style="color:#888;">Waiting for restaurant</span>
+                        <span style="color:#888;">Waiting...</span>
                     <?php endif; ?>
 
                 <?php else: ?>

@@ -55,19 +55,34 @@ if (!$result) {
                                     <?php echo htmlspecialchars($row['status']); ?>
                                 </span>
                             </td>
-                            <td><?php echo htmlspecialchars($row['changed_by_staff']); ?></td>
+                            <td>
+                                <!-- Handle NULL changed_by_staff values -->
+                                <?php 
+                                if (empty($row['changed_by_staff']) || is_null($row['changed_by_staff'])) {
+                                    echo '<span style="color: #888; font-style: italic;">Customer</span>';
+                                } else {
+                                    echo htmlspecialchars($row['changed_by_staff']);
+                                }
+                                ?>
+                            </td>
                             <td style="color: #bbb; font-size: 13px;">
                                 <?php echo date('M d, Y - H:i', strtotime($row['changed_at'])); ?>
                             </td>
                             <td>
                                 <!-- Remark with proper wrapping and no width constraint -->
                                 <div style="white-space: normal; word-wrap: break-word; line-height: 1.5; padding: 8px 0;">
-                                    <?php echo htmlspecialchars($row['remark']); ?>
+                                    <?php 
+                                    if (!empty($row['remark']) && !is_null($row['remark'])) {
+                                        echo htmlspecialchars($row['remark']);
+                                    } else {
+                                        echo '<span style="color: #666;">—</span>';
+                                    }
+                                    ?>
                                 </div>
                             </td>
                             <td style="text-align: center;">
-                                <!-- Action button with proper centering -->
-                                <a href="admin_view_detail_history.php?id=<?php echo $row['HistoryID']; ?>" 
+                                <!-- Pass OrderID instead of HistoryID to show all history for that order -->
+                                <a href="admin_view_detail_history.php?id=<?php echo urlencode($row['OrderID']); ?>" 
                                    class="admin-btn-sm" style="display: inline-block; min-width: 70px;">
                                     View
                                 </a>

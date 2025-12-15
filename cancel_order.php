@@ -61,6 +61,42 @@ try {
     $stmt->bind_param("ss", $historyID, $orderID);
     $stmt->execute();
 
+    // 3.5️⃣ Check payment method and issue refund if not COD
+    $stmt = $conn->prepare("
+        SELECT PaymentID, method, amount, account_last4
+        FROM payment
+        WHERE OrderID = ?
+    ");
+    $stmt->bind_param("s", $orderID);
+    $stmt->execute();
+    $paymentResult = $stmt->get_result()->fetch_assoc();
+
+    if ($paymentResult && $paymentResult["method"] !== "COD") {
+        $refundID = genID("REF_");
+        $refundAmount = $paymentResult["amount"];
+        $refundMethod = "Refund - " . $paymentResult["method"];
+        $originalPaymentID = $paymentResult["PaymentID"];
+        $accountLast4 = $paymentResult["account_last4"];
+        
+        $stmt = $conn->prepare("
+            INSERT INTO payment
+            (PaymentID, OrderID, amount, method, account_last4)
+            VALUES (?, ?, ?, ?, ?)
+        ");
+        $stmt->bind_param("ssdss", $refundID, $orderID, $refundAmount, $refundMethod, $accountLast4);
+        $stmt->execute();
+        
+        $historyRefundID = genID("PHIST_");
+        $refundRemark = "Refund issued for cancelled order - Original payment method: " . $paymentResult["method"];
+        
+        $stmt = $conn->prepare("
+            INSERT INTO paymenthistory
+            (HistoryID, PaymentID, OrderID, transaction_type, amount, method, account_last4, status, remark)
+            VALUES (?, ?, ?, 'REFUND', ?, ?, ?, 'SUCCESS', ?)
+        ");
+        $stmt->bind_param("sssdsss", $historyRefundID, $refundID, $orderID, $refundAmount, $refundMethod, $accountLast4, $refundRemark);
+        $stmt->execute();
+    }
 
     // 4️⃣（重要）恢复库存
     $stmt = $conn->prepare("
