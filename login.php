@@ -2,10 +2,6 @@
 include "config.php";
 session_start();
 
-/* ---------------------------------------------------
-   HANDLE LOGIN SUBMIT
---------------------------------------------------- */
-
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -25,16 +21,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         if (password_verify($password, $row["password"])) {
 
-            // valid → login
             $_SESSION["CustomerID"] = $row["CustomerID"];
             $_SESSION["Name"]       = $row["Name"];
 
-            // If previously forced logout, remove flag
             if (isset($_SESSION["force_logout"])) {
                 unset($_SESSION["force_logout"]);
             }
 
-            // Remember Me cookie (30 days)
             if ($remember) {
                 setcookie(
                     "remember_id",
@@ -42,11 +35,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     time() + (86400 * 30),
                     "/",
                     "",
-                    false,      // HTTPS only → change to true if your environment supports HTTPS
-                    true        // HttpOnly → safer
+                    false,   
+                    true        
                 );
             } else {
-                // remove cookie
                 setcookie("remember_id", "", time() - 3600, "/", "", false, true);
             }
 
@@ -114,7 +106,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         font-size:16px;
     }
 
-    /* Remember me */
     .remember-row {
         display:flex;
         align-items:center;
@@ -133,7 +124,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     
-    /* Toast */
     #toast {
         position: fixed;
         top: 20px;
@@ -187,7 +177,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 <body>
     
-<!-- Small Top Header -->
 <div style="
     display:flex;
     align-items:center;
@@ -203,7 +192,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </div>
 
 
-<!-- Toast -->
 <div id="toast"></div>
 
 <script>
@@ -218,7 +206,6 @@ function showToast(type, message) {
 </script>
 
 <?php
-// Toast messages
 if (isset($_GET["registered"])) echo "<script>showToast('success','Registration successful! Please log in.');</script>";
 if (isset($_GET["logged_out"])) echo "<script>showToast('info','You have been logged out.');</script>";
 if (!empty($error))          echo "<script>showToast('error', '$error');</script>";

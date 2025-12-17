@@ -28,7 +28,6 @@
     min-height: 100px;
 }
 
-/* Toast */
 .toast {
     position: fixed;
     top: 30px;
@@ -87,7 +86,6 @@
 
 </div>
 
-<!-- Toast -->
 <div id="toast" class="toast"></div>
 
 <script>

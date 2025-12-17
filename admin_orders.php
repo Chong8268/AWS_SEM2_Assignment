@@ -70,7 +70,6 @@ $actionText = [
         <?php if (isset($actionText[$row['status']])): ?>
         <form method="post" action="update_order_status.php" style="display:inline;">
             <input type="hidden" name="order_id" value="<?= $row['OrderID'] ?>">
-            <!-- Disable button if not admin -->
             <button class="admin-btn-sm" <?= !$isAdmin ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : '' ?>>
                 <?= $actionText[$row['status']] ?>
             </button>

@@ -1,9 +1,6 @@
 <?php
 include 'admin_header.php';
 
-/* =======================
-   GET ORDER ID
-   ======================= */
 if (!isset($_GET['id'])) {
     header("Location: admin_orders.php");
     exit;
@@ -11,9 +8,6 @@ if (!isset($_GET['id'])) {
 
 $orderId = $_GET['id'];
 
-/* =======================
-   FETCH ORDER INFO
-   ======================= */
 $orderStmt = $conn->prepare("
     SELECT 
         o.OrderID,
@@ -35,9 +29,6 @@ if (!$order) {
     exit;
 }
 
-/* =======================
-   FETCH ORDER ITEMS
-   ======================= */
 $itemStmt = $conn->prepare("
     SELECT 
         p.Name AS ProductName,
@@ -51,10 +42,6 @@ $itemStmt->bind_param("s", $orderId);
 $itemStmt->execute();
 $items = $itemStmt->get_result();
 
-/* =======================
-   FETCH ORDER HISTORY
-   FIX: LEFT JOIN
-   ======================= */
 $historyStmt = $conn->prepare("
     SELECT
         oh.status,
@@ -77,7 +64,6 @@ $histories = $historyStmt->get_result();
 
     <h1>Order #<?= htmlspecialchars($order['OrderID']) ?></h1>
 
-    <!-- ORDER INFO -->
     <div class="admin-card" style="margin-bottom:30px;">
         <p><strong>Customer:</strong> <?= htmlspecialchars($order['CustomerName']) ?></p>
         <p><strong>Phone:</strong> <?= htmlspecialchars($order['Phone']) ?></p>
@@ -86,7 +72,6 @@ $histories = $historyStmt->get_result();
         <p><strong>Total:</strong> RM <?= number_format($order['total_amount'],2) ?></p>
     </div>
 
-    <!-- ORDER ITEMS -->
     <h3>Order Items</h3>
     <table class="admin-table">
         <tr>
@@ -106,7 +91,6 @@ $histories = $historyStmt->get_result();
         <?php endwhile; ?>
     </table>
 
-    <!-- ORDER HISTORY -->
     <h3 style="margin-top:40px;">Order History</h3>
     <table class="admin-table">
         <tr>

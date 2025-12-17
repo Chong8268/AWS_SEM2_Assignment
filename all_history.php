@@ -9,7 +9,6 @@ if (!isset($_SESSION["CustomerID"])) {
 
 $customerID = $_SESSION["CustomerID"];
 
-/* 取全部订单 */
 $stmt = $conn->prepare("
     SELECT OrderID, order_date, total_amount, status
     FROM `order`
@@ -36,7 +35,6 @@ $result = $stmt->get_result();
     margin-bottom: 30px;
 }
 
-/* order card */
 .history-card {
     background: linear-gradient(145deg, #161616, #111);
     border-radius: 14px;
@@ -53,7 +51,6 @@ $result = $stmt->get_result();
     transform: translateY(-3px);
 }
 
-/* left */
 .history-info h4 {
     margin: 0 0 6px;
     font-size: 1.05rem;
@@ -65,7 +62,6 @@ $result = $stmt->get_result();
     font-size: .9rem;
 }
 
-/* status badge */
 .history-status {
     display: inline-block;
     margin-top: 6px;
@@ -82,7 +78,6 @@ $result = $stmt->get_result();
 .status-completed { background:#2ecc71; color:#000; }
 .status-cancelled { background:#ff6b6b; color:#fff; }
 
-/* right */
 .history-actions {
     text-align: right;
 }
@@ -110,7 +105,6 @@ $result = $stmt->get_result();
     color: #000;
 }
 
-/* empty */
 .empty-msg {
     color: #aaa;
     font-size: 1rem;

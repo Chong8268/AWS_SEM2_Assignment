@@ -4,7 +4,6 @@ include "config.php";
 $itemID = $_GET['id'];
 $newQty = (int)$_GET['qty'];
 
-// 查库存
 $stmt = $conn->prepare("
     SELECT p.stock_quantity
     FROM cartitems ci
@@ -20,7 +19,6 @@ if ($newQty > $stock) {
     exit;
 }
 
-// 更新数量
 $stmt = $conn->prepare("
     UPDATE cartitems
     SET quantity = ?

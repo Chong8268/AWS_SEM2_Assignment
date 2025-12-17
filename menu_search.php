@@ -12,7 +12,6 @@
   color:#fff;
 }
 
-/* category buttons */
 .ms-categories {
   display:flex;
   gap:14px;
@@ -31,7 +30,6 @@
   background:#222;
 }
 
-/* menu card */
 .ms-card {
   background:#181818;
   border-radius:14px;
@@ -59,12 +57,10 @@
 
 <h1>Search Menu</h1>
 
-<!-- Search Bar -->
 <div class="ms-search-box">
   <input id="searchInput" type="text" placeholder="Search for food...">
 </div>
 
-<!-- Categories -->
 <div class="ms-categories">
   <div class="ms-cat-btn" data-cat="">All</div>
   <div class="ms-cat-btn" data-cat="Meals">Meals</div>
@@ -76,7 +72,6 @@
   <div class="ms-cat-btn" data-cat="Desserts">Desserts</div>
 </div>
 
-<!-- Results -->
 <div id="results"></div>
 
 </div>
@@ -86,7 +81,6 @@
 function loadResults() {
     let keyword = document.getElementById("searchInput").value;
 
-    // If user is typing → auto switch to ALL
     if (keyword.length > 0) {
         document.querySelectorAll(".ms-cat-btn").forEach(btn => btn.classList.remove("active"));
         document.querySelector('.ms-cat-btn[data-cat=""]').classList.add("active");
@@ -106,14 +100,11 @@ function loadResults() {
     });
 }
 
-// Live search
 document.getElementById("searchInput").addEventListener("input", loadResults);
 
-// Category click
 document.querySelectorAll(".ms-cat-btn").forEach(btn => {
     btn.addEventListener("click", function() {
 
-        // If user clicks category → clear search box
         document.getElementById("searchInput").value = "";
 
         document.querySelectorAll(".ms-cat-btn").forEach(b => b.classList.remove("active"));
@@ -123,7 +114,6 @@ document.querySelectorAll(".ms-cat-btn").forEach(btn => {
     });
 });
 
-// Initial load
 loadResults();
 </script>
 

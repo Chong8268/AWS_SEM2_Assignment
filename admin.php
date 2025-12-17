@@ -1,24 +1,17 @@
 <?php
 include 'admin_header.php';
-/* =======================
-   📊 DASHBOARD STATS SQL
-   ======================= */
-
-// Pending orders
 $pendingOrders = $conn->query("
     SELECT COUNT(*) AS total 
     FROM `order` 
     WHERE status = 'PENDING'
 ")->fetch_assoc()['total'] ?? 0;
 
-// Today orders
 $todayOrders = $conn->query("
     SELECT COUNT(*) AS total
     FROM `order`
     WHERE DATE(order_date) = CURDATE()
 ")->fetch_assoc()['total'] ?? 0;
 
-// Today revenue
 $todayRevenue = $conn->query("
     SELECT IFNULL(SUM(total_amount),0) AS total
     FROM `order`
@@ -26,13 +19,11 @@ $todayRevenue = $conn->query("
       AND status NOT IN ('CANCELLED')
 ")->fetch_assoc()['total'] ?? 0;
 
-// Total customers
 $totalCustomers = $conn->query("
     SELECT COUNT(*) AS total 
     FROM customer
 ")->fetch_assoc()['total'] ?? 0;
 
-// Total products
 $totalProducts = $conn->query("
     SELECT COUNT(*) AS total 
     FROM product
@@ -41,18 +32,12 @@ $totalProducts = $conn->query("
 
 
 <style>
-/* =======================
-   LAYOUT
-   ======================= */
 .admin-wrap {
     max-width: 1280px;
     margin: 60px auto;
     padding: 0 32px;
 }
 
-/* =======================
-   SECTION
-   ======================= */
 .admin-section {
     margin-bottom: 70px;
 }
@@ -64,27 +49,19 @@ $totalProducts = $conn->query("
     color: #fff;
 }
 
-/* =======================
-   GRID SYSTEM
-   ======================= */
 .admin-grid {
     display: grid;
     gap: 28px;
 }
 
-/* --- Overview cards --- */
 .stats-grid {
     grid-template-columns: repeat(3, 1fr);
 }
 
-/* --- Management buttons --- */
 .action-grid {
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
-/* =======================
-   CARD BASE
-   ======================= */
 .admin-card {
     background: #161616;
     border-radius: 18px;
@@ -92,10 +69,6 @@ $totalProducts = $conn->query("
     box-shadow: 0 12px 30px rgba(0,0,0,.45);
     transition: all .25s ease;
 }
-
-/* =======================
-   STAT CARDS
-   ======================= */
 .stat-card {
     text-align: center;
 }
@@ -112,9 +85,6 @@ $totalProducts = $conn->query("
     margin-bottom: 10px;
 }
 
-/* =======================
-   ACTION BUTTON CARDS
-   ======================= */
 .admin-btn {
     display: flex;
     align-items: center;
@@ -133,9 +103,6 @@ $totalProducts = $conn->query("
     transform: translateY(-4px);
 }
 
-/* =======================
-   RESPONSIVE
-   ======================= */
 @media (max-width: 1024px) {
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -154,9 +121,6 @@ $totalProducts = $conn->query("
 
     <h1 style="margin-bottom:40px;">Welcome, Admin</h1>
 
-    <!-- =======================
-         📊 OVERVIEW
-         ======================= -->
     <div class="admin-section">
         <h2 class="admin-section-title">Overview</h2>
 
@@ -188,9 +152,6 @@ $totalProducts = $conn->query("
         </div>
     </div>
 
-    <!-- =======================
-         ⚙️ MANAGEMENT
-         ======================= -->
     <div class="admin-section">
         <h2 class="admin-section-title">Management</h2>
 

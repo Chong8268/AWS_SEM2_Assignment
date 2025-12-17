@@ -1,14 +1,10 @@
 <?php
-// Start session
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 include_once "config.php";
 
-/* --------------------------------
-   AUTO LOGIN（你原本的）
--------------------------------- */
 if (
     !isset($_SESSION["CustomerID"]) &&
     isset($_COOKIE["remember_user"]) &&
@@ -21,9 +17,6 @@ if (isset($_SESSION["CustomerID"]) && isset($_SESSION["force_logout"])) {
     unset($_SESSION["force_logout"]);
 }
 
-/* --------------------------------
-   🔹 计算 Cart Item 数量（新增）
--------------------------------- */
 $cartCount = 0;
 
 if (isset($_SESSION["CustomerID"])) {
@@ -95,7 +88,6 @@ if (isset($_SESSION["CustomerID"])) {
             color: #00ffa6;
         }
 
-        /* 🔹 Cart badge（新增） */
         .cart-link {
             position: relative;
         }
@@ -146,7 +138,6 @@ if (isset($_SESSION["CustomerID"])) {
         
 
         <?php if (isset($_SESSION["CustomerID"])): ?>
-            <!-- 🔹 Cart Button -->
             <li>
                 <a href="cart.php" class="cart-link">
                     Cart

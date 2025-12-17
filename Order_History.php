@@ -14,7 +14,6 @@ if ($orderID === '') {
     die("Invalid order ID.");
 }
 
-/* ---------- 验证订单属于当前用户 ---------- */
 $stmt = $conn->prepare("
     SELECT OrderID, order_date, total_amount, status
     FROM `order`
@@ -28,7 +27,6 @@ if (!$order) {
     die("Order not found or unauthorized access.");
 }
 
-/* ---------- 读取订单历史 ---------- */
 $stmt = $conn->prepare("
     SELECT *
     FROM orderhistory
@@ -63,7 +61,6 @@ $history = $stmt->get_result();
     font-size: .95rem;
 }
 
-/* Timeline */
 .timeline {
     position: relative;
     margin-top: 40px;
@@ -102,7 +99,6 @@ $history = $stmt->get_result();
     box-shadow: 0 8px 20px rgba(0,0,0,.35);
 }
 
-/* Status colors */
 .status-PENDING { background:#ffd86b; color:#000; }
 .status-CONFIRMED { background:#00ffa6; color:#000; }
 .status-CANCELLED { background:#ff6b6b; color:#fff; }

@@ -1,9 +1,6 @@
 <?php
 session_start();
 
-/* =======================
-   DESTROY SESSION
-   ======================= */
 $_SESSION = [];
 
 if (ini_get("session.use_cookies")) {
@@ -21,8 +18,5 @@ if (ini_get("session.use_cookies")) {
 
 session_destroy();
 
-/* =======================
-   REDIRECT TO LOGIN
-   ======================= */
 header("Location: admin_login.php");
 exit;

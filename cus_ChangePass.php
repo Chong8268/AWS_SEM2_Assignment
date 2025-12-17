@@ -46,7 +46,6 @@
     background: #555;
 }
 
-/* message boxes */
 .cpw-msg {
     margin-top: 10px;
     padding: 8px;

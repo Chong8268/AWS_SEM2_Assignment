@@ -2,7 +2,6 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Include necessary files
 include 'config.php';
 include 'admin_header.php';
 ?>
@@ -101,7 +100,6 @@ include 'admin_header.php';
     <h1 class="payment-title">Payment History</h1>
     
     <?php
-    // Check if table exists
     $tableCheck = mysqli_query($conn, "SHOW TABLES LIKE 'paymenthistory'");
     
     if (mysqli_num_rows($tableCheck) == 0) {
@@ -113,7 +111,6 @@ include 'admin_header.php';
         exit;
     }
     
-    // Fetch all payment history records
     $query = "SELECT 
                 HistoryID,
                 PaymentID,

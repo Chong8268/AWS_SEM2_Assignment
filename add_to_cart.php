@@ -2,9 +2,6 @@
 include "config.php";
 session_start();
 
-/* -------------------------
-   必须先登录
-------------------------- */
 if (!isset($_SESSION["CustomerID"])) {
     header("Location: login.php");
     exit;
@@ -12,9 +9,6 @@ if (!isset($_SESSION["CustomerID"])) {
 
 $customerID = $_SESSION["CustomerID"];
 
-/* -------------------------
-   接收参数
-------------------------- */
 if (!isset($_POST["product_id"], $_POST["quantity"])) {
     header("Location: menu.php");
     exit;
@@ -28,9 +22,6 @@ if ($quantity <= 0) {
     exit;
 }
 
-/* -------------------------
-   取得 / 创建 cart
-------------------------- */
 $stmt = $conn->prepare("
     SELECT CartID
     FROM cart
@@ -41,7 +32,6 @@ $stmt->execute();
 $cartResult = $stmt->get_result();
 
 if ($cartResult->num_rows === 0) {
-    // 没有 cart → 创建一个
     $cartID = uniqid("CRT");
     $stmt = $conn->prepare("
         INSERT INTO cart (CartID, CustomerID, created_at)
@@ -53,10 +43,6 @@ if ($cartResult->num_rows === 0) {
     $cartID = $cartResult->fetch_assoc()["CartID"];
 }
 
-/* -------------------------
-   查「真实可用库存」
-   stock_quantity - cart中已有数量
-------------------------- */
 $stmt = $conn->prepare("
     SELECT
         p.stock_quantity - IFNULL(SUM(ci.quantity), 0) AS available,
@@ -82,17 +68,11 @@ if (!$product) {
 $availableStock = (int)$product["available"];
 $unitPrice      = $product["price"];
 
-/* -------------------------
-   库存不足 → 拦截
-------------------------- */
 if ($quantity > $availableStock) {
     header("Location: product.php?product_id=$productID&stock_error=1");
     exit;
 }
 
-/* -------------------------
-   加入 / 更新 cartitems
-------------------------- */
 $stmt = $conn->prepare("
     INSERT INTO cartitems (CartID, ProductID, quantity, unit_price)
     VALUES (?, ?, ?, ?)
@@ -108,8 +88,5 @@ $stmt->bind_param(
 );
 $stmt->execute();
 
-/* -------------------------
-   成功 → 回到 cart
-------------------------- */
 header("Location: cart.php?added=1");
 exit;

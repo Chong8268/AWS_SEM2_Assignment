@@ -18,7 +18,6 @@ $conn->begin_transaction();
 
 try {
 
-    // 1️⃣ 确认 order 是 PENDING + 属于该用户
     $stmt = $conn->prepare("
         SELECT status
         FROM `order`
@@ -33,7 +32,6 @@ try {
         throw new Exception("Order cannot be cancelled");
     }
 
-    // 2️⃣ 更新 order status
     $stmt = $conn->prepare("
         UPDATE `order`
         SET status = 'CANCELLED'
@@ -50,7 +48,6 @@ try {
     $stmt->bind_param("s", $orderID);
     $stmt->execute();
 
-    // 3️⃣ 记录 order history
     $historyID = genID("HIS");
 
     $stmt = $conn->prepare("
@@ -61,7 +58,6 @@ try {
     $stmt->bind_param("ss", $historyID, $orderID);
     $stmt->execute();
 
-    // 3.5️⃣ Check payment method and issue refund if not COD
     $stmt = $conn->prepare("
         SELECT PaymentID, method, amount, account_last4
         FROM payment
@@ -98,7 +94,6 @@ try {
         $stmt->execute();
     }
 
-    // 4️⃣（重要）恢复库存
     $stmt = $conn->prepare("
         SELECT ProductID, quantity
         FROM orderitems

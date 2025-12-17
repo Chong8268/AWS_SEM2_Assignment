@@ -16,7 +16,6 @@ if ($productID) {
     $result = $stmt->get_result();
     $product = $result->fetch_assoc();
     $stock = (int)$product["stock_quantity"];
-    // 查当前用户购物车中，这个商品已经有多少
     $cartQty = 0;
 
     if (isset($_SESSION['CustomerID'])) {
@@ -45,7 +44,6 @@ if ($productID) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Details</title>
     <style>
-        /* Product Page Styles */
         .pd-container {
             padding: 40px 50px;
             max-width: 1200px;
@@ -58,7 +56,7 @@ if ($productID) {
 
         .pd-img {
             display: flex;
-            justify-content: center; /* Center the image horizontally */
+            justify-content: center; 
         }
         .pd-img img {
             max-width: 90%;
@@ -79,7 +77,6 @@ if ($productID) {
             line-height: 1.6;
         }
 
-        /* buttons */
         .pd-btn {
             padding: 14px 30px;
             background: #00ffa6;
@@ -126,7 +123,6 @@ if ($productID) {
         <div class="pd-price">RM <?= number_format($product['price'], 2) ?></div>
         <p class="pd-desc"><?= $product['description'] ?></p>
 
-        <!-- Add to Cart Form -->
         <form method="POST" action="add_to_cart.php">
             <input type="hidden" name="product_id" value="<?= $product['ProductID'] ?>">
             <label>Quantity: </label>

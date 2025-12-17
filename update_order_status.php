@@ -36,7 +36,6 @@ if (!isset($nextStatus[$order['status']])) {
 
 $newStatus = $nextStatus[$order['status']];
 
-/* update order */
 $upd = $conn->prepare("UPDATE `order` SET status=? WHERE OrderID=?");
 $upd->bind_param("ss", $newStatus, $orderId);
 $upd->execute();
@@ -59,7 +58,6 @@ $histStmt = $conn->prepare("
 $histStmt->bind_param("sssss", $historyId, $orderId, $newStatus, $staffId, $remark);
 $histStmt->execute();
 
-/* create delivery when READY */
 if ($newStatus === 'READY_TO_PICKUP') {
 
     $chk = $conn->prepare("SELECT 1 FROM deliveryinfo WHERE OrderID=?");
@@ -83,7 +81,6 @@ if ($newStatus === 'READY_TO_PICKUP') {
         );
         $ins->execute();
     } else {
-        // Update existing delivery record to READY_TO_PICKUP
         $upd = $conn->prepare("UPDATE deliveryinfo SET status='READY_TO_PICKUP' WHERE OrderID=?");
         $upd->bind_param("s", $orderId);
         $upd->execute();

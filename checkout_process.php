@@ -28,7 +28,6 @@ if ($paymentMethod === "Card") {
     $cardExpiry = trim($_POST["card_expiry"] ?? "");
     $cardCVV = trim($_POST["card_cvv"] ?? "");
     
-    // Validate card fields
     if (strlen($cardName) < 3) {
         die("Invalid cardholder name.");
     }
@@ -41,7 +40,6 @@ if ($paymentMethod === "Card") {
         die("Invalid expiry date format.");
     }
     
-    // Validate expiry date is not in the past
     list($month, $year) = explode('/', $cardExpiry);
     $expiryDate = new DateTime("20$year-$month-01");
     $now = new DateTime();
@@ -76,7 +74,6 @@ if ($paymentMethod === "Card") {
     }
 }
 
-/* ---------- 生成唯一 ID ---------- */
 function genID($prefix) {
     return $prefix . bin2hex(random_bytes(8)) . time();
 }
@@ -91,7 +88,6 @@ $conn->begin_transaction();
 
 try {
 
-    /* ---------- 1️⃣ 找 cart ---------- */
     $stmt = $conn->prepare("SELECT CartID FROM cart WHERE CustomerID = ?");
     $stmt->bind_param("s", $customerID);
     $stmt->execute();
@@ -103,7 +99,6 @@ try {
 
     $cartID = $cart["CartID"];
 
-    /* ---------- 2️⃣ 拿 cart items（并锁库存） ---------- */
     $stmt = $conn->prepare("
         SELECT ci.ProductID, ci.quantity, ci.unit_price, p.stock_quantity
         FROM cartitems ci
@@ -131,7 +126,6 @@ try {
         $cartData[] = $row;
     }
 
-    /* ---------- 3️⃣ Insert order ---------- */
     $stmt = $conn->prepare("
         INSERT INTO `order`
         (OrderID, CustomerID, order_date, total_amount, status)
@@ -140,7 +134,6 @@ try {
     $stmt->bind_param("ssd", $orderID, $customerID, $total);
     $stmt->execute();
 
-    // 下单后写入订单历史
     $historyID = genID("HIS");
 
     $stmt = $conn->prepare("
@@ -152,7 +145,6 @@ try {
     $stmt->execute();
 
 
-    /* ---------- 4️⃣ Insert order items + 扣库存 ---------- */
     foreach ($cartData as $item) {
 
         $itemID = genID("ITEM");
@@ -181,7 +173,6 @@ try {
         $stmt->execute();
     }
 
-    /* ---------- 5️⃣ delivery info ---------- */
     $stmt = $conn->prepare("
         INSERT INTO deliveryinfo
         (DeliveryID, OrderID, receiver_name, receiver_phone, address, status)
@@ -190,10 +181,7 @@ try {
     $stmt->bind_param("sssss", $deliveryID, $orderID, $fullName, $phone, $address);
     $stmt->execute();
 
-    /* ---------- 6️⃣ payment ---------- */
     if ($paymentMethod === "Card") {
-        // In production, you should NEVER store full card details
-        // Use a payment gateway like Stripe instead
         $last4 = substr($cardNumber, -4);
         
         $stmt = $conn->prepare("
@@ -241,7 +229,6 @@ try {
         $stmt->execute();
     }
 
-    /* ---------- 7️⃣ 清空 cart ---------- */
     $stmt = $conn->prepare("DELETE FROM cartitems WHERE CartID = ?");
     $stmt->bind_param("s", $cartID);
     $stmt->execute();

@@ -15,9 +15,7 @@ if (!isset($_SESSION['StaffID'])) {
 <title>Admin | Cafeteria Xpress</title>
 
 <style>
-/* ================================
-   ADMIN GLOBAL STYLES
-================================ */
+
 * {
     box-sizing: border-box;
 }
@@ -30,7 +28,6 @@ body {
     line-height: 1.6;
 }
 
-/* Wrapper with improved spacing and responsive design */
 .admin-wrap {
     max-width: 1200px;
     margin: 0 auto;
@@ -43,10 +40,6 @@ body {
     }
 }
 
-/* ================================
-   ADMIN NAVBAR - Modern Design
-================================ */
-/* Enhanced navbar with better shadows and backdrop blur */
 .admin-nav {
     display: flex;
     justify-content: space-between;
@@ -62,7 +55,6 @@ body {
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
 }
 
-/* Green-themed logo with hover effect */
 .admin-logo {
     font-size: 1.5rem;
     font-weight: 700;
@@ -78,7 +70,6 @@ body {
     transform: translateY(-1px);
 }
 
-/* Improved navigation menu */
 .admin-nav ul {
     list-style: none;
     display: flex;
@@ -117,7 +108,6 @@ body {
     width: 100%;
 }
 
-/* Modern logout button design */
 .admin-logout {
     background: #dc2626;
     padding: 10px 20px;
@@ -149,9 +139,6 @@ body {
     }
 }
 
-/* ================================
-   ADMIN FORM
-================================ */
 .admin-form label {
     display: block;
     color: #9ca3af;
@@ -185,9 +172,6 @@ body {
     box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
 }
 
-/* ================================
-   ADMIN CARD + GRID
-================================ */
 .admin-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -195,7 +179,6 @@ body {
     margin-top: 32px;
 }
 
-/* Modern card design with green accents */
 .admin-card {
     background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
     padding: 32px;
@@ -212,7 +195,6 @@ body {
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(34, 197, 94, 0.15);
 }
 
-/* Green-themed stat numbers */
 .admin-stat {
     font-size: 2.5rem;
     font-weight: 800;
@@ -227,9 +209,6 @@ body {
     font-weight: 500;
 }
 
-/* ================================
-   ADMIN TABLE
-================================ */
 .admin-table {
     width: 100%;
     border-collapse: collapse;
@@ -264,10 +243,6 @@ body {
     border-bottom: none;
 }
 
-/* ================================
-   BUTTONS
-================================ */
-/* Green-themed primary buttons */
 .admin-btn-sm {
     padding: 10px 18px;
     background: #22c55e;
@@ -310,9 +285,6 @@ body {
     box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
 }
 
-/* ================================
-   STATUS TAGS
-================================ */
 .status {
     padding: 6px 14px;
     border-radius: 20px;
@@ -342,9 +314,6 @@ body {
     color: #fff; 
 }
 
-/* ================================
-   UTILITY CLASSES
-================================ */
 .text-center {
     text-align: center;
 }
@@ -357,7 +326,6 @@ body {
     margin-bottom: 32px;
 }
 
-/* Page title styling */
 h1, h2, h3 {
     color: #f3f4f6;
     font-weight: 700;
@@ -379,9 +347,6 @@ h2 {
 
 <body>
 
-<!-- ================================
-     ADMIN NAVBAR
-================================ -->
 <nav class="admin-nav">
     <a href="admin.php" class="admin-logo">ADMIN PANEL</a>
 

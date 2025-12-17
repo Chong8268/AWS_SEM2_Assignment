@@ -2,7 +2,6 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Include necessary files
 include 'config.php';
 include 'admin_header.php';
 
@@ -57,14 +56,12 @@ if (empty($histories)) {
 ?>
 
 <div class="admin-wrap" style="max-width: 1200px; margin: 40px auto; padding: 20px;">
-    <!-- Back Button -->
     <div style="margin-bottom: 25px;">
         <a href="admin_order_history.php" class="admin-btn-sm" style="background: #444; display: inline-block; padding: 10px 20px; text-decoration: none; border-radius: 6px; color: #fff;">
             ← Back to Order History
         </a>
     </div>
 
-    <!-- Page Title -->
     <h1 style="color: #fff; margin-bottom: 10px; font-size: 32px; font-weight: 600;">
         Order History Timeline
     </h1>
@@ -72,18 +69,15 @@ if (empty($histories)) {
         Order ID: #<?php echo htmlspecialchars($orderID); ?>
     </p>
 
-    <!-- Display all history records in a timeline -->
     <?php foreach ($histories as $index => $history): ?>
     <div style="background: #1a1a1a; border-radius: 10px; padding: 30px; border: 1px solid #333; margin-bottom: 20px; position: relative;">
         
-        <!-- Timeline Badge -->
         <div style="position: absolute; left: -10px; top: 30px; background: #10b981; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; border: 3px solid #0d0d0d;">
             <?php echo count($histories) - $index; ?>
         </div>
 
         <div style="padding-left: 40px;">
             
-            <!-- History ID and Status Row -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
                 <div>
                     <div style="color: #888; font-size: 12px; margin-bottom: 5px;">History ID</div>
@@ -112,11 +106,9 @@ if (empty($histories)) {
                 </div>
             </div>
 
-            <!-- Details Grid -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px;">
                 
-                <!-- Changed By Staff -->
-                <div>
+            <div>
                     <div style="color: #888; font-size: 12px; margin-bottom: 5px;">Changed By</div>
                     <div style="color: #fff; font-size: 16px;">
                         <?php 
@@ -129,7 +121,6 @@ if (empty($histories)) {
                     </div>
                 </div>
 
-                <!-- Changed At -->
                 <div>
                     <div style="color: #888; font-size: 12px; margin-bottom: 5px;">Changed At</div>
                     <div style="color: #fff; font-size: 16px;">
@@ -139,7 +130,6 @@ if (empty($histories)) {
                 
             </div>
 
-            <!-- Remark -->
             <?php if (!empty($history['remark']) && !is_null($history['remark'])): ?>
             <div>
                 <div style="color: #888; font-size: 12px; margin-bottom: 8px;">Remark</div>

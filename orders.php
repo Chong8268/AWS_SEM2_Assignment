@@ -12,7 +12,6 @@
     margin-bottom: 20px;
 }
 
-/* order card */
 .orders-card {
     background: #181818;
     padding: 20px;
@@ -23,7 +22,6 @@
     align-items: center;
 }
 
-/* status styles */
 .orders-status {
     padding: 6px 12px;
     border-radius: 8px;
@@ -36,7 +34,6 @@
 .orders-completed { background: #00ffa6; color: #000; }
 .orders-cancelled { background: #ff6b6b; color: #fff; }
 
-/* view link */
 .orders-view {
     color: #00ffa6;
     text-decoration: none;
@@ -52,7 +49,6 @@
 
     <h2 class="orders-title">My Orders</h2>
 
-    <!-- Example Order Card -->
     <div class="orders-card">
         <div>
             <h3>Order #12345</h3>

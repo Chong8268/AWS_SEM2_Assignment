@@ -33,7 +33,6 @@ $orders = $stmt->get_result();
 }
 
 
-/* Order Card */
 .order-card {
     background: #161616;
     border-radius: 14px;
@@ -50,7 +49,6 @@ $orders = $stmt->get_result();
     transform: translateY(-3px);
 }
 
-/* Left info */
 .order-info h4 {
     margin: 0 0 6px;
     font-size: 1.1rem;
@@ -62,7 +60,6 @@ $orders = $stmt->get_result();
     font-size: .95rem;
 }
 
-/* Status badge */
 .order-status {
     display: inline-block;
     margin-top: 6px;
@@ -87,7 +84,6 @@ $orders = $stmt->get_result();
     color: #fff;
 }
 
-/* Right actions */
 .order-actions {
     text-align: right;
 }

@@ -1,9 +1,7 @@
 <?php
-// Include necessary files
 include 'config.php';
 include 'admin_header.php';
 
-// Fetch all order history records, sorted by changed_at (newest first)
 $query = "SELECT HistoryID, OrderID, status, changed_by_staff, changed_at, remark 
           FROM orderhistory 
           ORDER BY changed_at DESC";
@@ -14,7 +12,6 @@ if (!$result) {
 }
 ?>
 
-<!-- Redesigned layout with full-width container and better column sizing -->
 <div class="admin-wrap" style="max-width: 100%; padding: 20px 40px;">
     <h1 style="color: #fff; margin-bottom: 30px; font-size: 28px;">Order History</h1>
     
@@ -56,7 +53,6 @@ if (!$result) {
                                 </span>
                             </td>
                             <td>
-                                <!-- Handle NULL changed_by_staff values -->
                                 <?php 
                                 if (empty($row['changed_by_staff']) || is_null($row['changed_by_staff'])) {
                                     echo '<span style="color: #888; font-style: italic;">Customer</span>';
@@ -69,7 +65,6 @@ if (!$result) {
                                 <?php echo date('M d, Y - H:i', strtotime($row['changed_at'])); ?>
                             </td>
                             <td>
-                                <!-- Remark with proper wrapping and no width constraint -->
                                 <div style="white-space: normal; word-wrap: break-word; line-height: 1.5; padding: 8px 0;">
                                     <?php 
                                     if (!empty($row['remark']) && !is_null($row['remark'])) {
@@ -81,7 +76,6 @@ if (!$result) {
                                 </div>
                             </td>
                             <td style="text-align: center;">
-                                <!-- Pass OrderID instead of HistoryID to show all history for that order -->
                                 <a href="admin_view_detail_history.php?id=<?php echo urlencode($row['OrderID']); ?>" 
                                    class="admin-btn-sm" style="display: inline-block; min-width: 70px;">
                                     View

@@ -14,7 +14,6 @@ if (!isset($_GET["item_id"])) {
 
 $itemID = $_GET["item_id"];
 
-// 先拿 item name（为了 toast）
 $stmt = $conn->prepare("
     SELECT p.name 
     FROM cartitems ci
@@ -32,11 +31,9 @@ if ($row = $result->fetch_assoc()) {
     exit;
 }
 
-// 删除 cart item
 $stmt = $conn->prepare("DELETE FROM cartitems WHERE ItemsID = ?");
 $stmt->bind_param("i", $itemID);
 $stmt->execute();
 
-// redirect 回 cart + toast
 header("Location: cart.php?removed=" . urlencode($itemName));
 exit;

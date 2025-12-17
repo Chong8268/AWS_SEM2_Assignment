@@ -1,5 +1,4 @@
 <?php
-// AUTO LOGIN BEFORE ANY OUTPUT
 session_start();
 include "config.php";
 
@@ -23,7 +22,6 @@ if (!isset($_SESSION["CustomerID"]) && isset($_COOKIE["remember_id"])) {
 ?>
 <?php include 'header.php'; ?>
 
-<!-- Toast (will NOT affect layout) -->
 <div id="toast"></div>
 
 <style>

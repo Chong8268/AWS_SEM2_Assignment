@@ -26,17 +26,14 @@ if (!$delivery) {
 }
 
 if ($action === 'pickup' && $delivery['status'] === 'READY_TO_PICKUP') {
-    // Update delivery status
     $stmt = $conn->prepare("UPDATE deliveryinfo SET status='DELIVERING' WHERE DeliveryID=?");
     $stmt->bind_param("s", $deliveryId);
     $stmt->execute();
     
-    // Update order status
     $stmt = $conn->prepare("UPDATE `order` SET status='DELIVERING' WHERE OrderID=?");
     $stmt->bind_param("s", $delivery['OrderID']);
     $stmt->execute();
     
-    // Insert into order history
     $historyId = 'HIS_' . date('YmdHis') . '_' . bin2hex(random_bytes(4));
     $staffId = $_SESSION['StaffID'];
     $remark = "Pick up by Rider";
@@ -85,17 +82,14 @@ if ($action === 'arrive' && $delivery['status'] === 'DELIVERING') {
 }
 
 if ($action === 'complete' && $delivery['status'] === 'ARRIVE') {
-    // Update delivery status to COMPLETED
     $stmt = $conn->prepare("UPDATE deliveryinfo SET status='COMPLETED' WHERE DeliveryID=?");
     $stmt->bind_param("s", $deliveryId);
     $stmt->execute();
     
-    // Update order status to COMPLETED
     $stmt = $conn->prepare("UPDATE `order` SET status='COMPLETED' WHERE OrderID=?");
     $stmt->bind_param("s", $delivery['OrderID']);
     $stmt->execute();
     
-    // Insert into order history
     $historyId = 'HIS_' . date('YmdHis') . '_' . bin2hex(random_bytes(4));
     $staffId = $_SESSION['StaffID'];
     $remark = "Payment received. Order completed successfully.";

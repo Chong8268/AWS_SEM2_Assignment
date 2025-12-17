@@ -2,9 +2,6 @@
 include 'admin_header.php';
 include 'config.php';
 
-/* =======================
-   FETCH DELIVERY + ORDER STATUS + PAYMENT METHOD
-   ======================= */
 $sql = "
     SELECT 
         d.DeliveryID,

@@ -14,7 +14,6 @@ $stock = intval($_POST['stock_quantity'] ?? 0);
 $category = trim($_POST['categories'] ?? '');
 $status = $_POST['status'] ?? 'ACTIVE';
 
-/* Validation */
 if (
     $productId === '' ||
     $name === '' ||
@@ -26,7 +25,6 @@ if (
     exit;
 }
 
-/* Update */
 $stmt = $conn->prepare("
     UPDATE product
     SET name = ?, description = ?, price = ?, stock_quantity = ?, categories = ?, status = ?

@@ -10,30 +10,21 @@ $address = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    // Keep original user input
     $name = trim($_POST["name"]);
     $phone = trim($_POST["phone"]);
     $password = $_POST["password"];
     $confirm = $_POST["confirm_password"];
     $address = trim($_POST["address"]);
 
-    // ================================
-    // VALIDATION (MARKET-GRADE LEVEL)
-    // ================================
-
-    // 1. Name validation
     if (strlen($name) < 3 || strlen($name) > 50 || 
         !preg_match("/^[A-Za-z .'-]+$/", $name)) {
         $errors[] = "Invalid name. Only letters allowed, 3–50 characters.";
     }
 
-    // 2. Phone validation (10–11 digits)
     if (!preg_match("/^[0-9]{10,11}$/", $phone)) {
         $errors[] = "Invalid phone number. Must be 10–11 digits.";
          $phone = "";
     }
-
-    // Check duplicate phone
     $checkPhone = $conn->prepare("SELECT * FROM Customer WHERE Phone = ?");
     $checkPhone->bind_param("s", $phone);
     $checkPhone->execute();
@@ -43,7 +34,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $errors[] = "Phone number already registered.";
     }
 
-    // 3. Password strength
     if (strlen($password) < 8 ||
         !preg_match("/[A-Z]/", $password) ||
         !preg_match("/[a-z]/", $password) ||
@@ -52,28 +42,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $errors[] = "Password must be 8+ chars, include upper, lower, number, and symbol.";
     }
 
-    // Prevent password = name
     if (strtolower($password) === strtolower($name)) {
         $errors[] = "Password cannot be the same as your name.";
     }
 
-    // 4. Confirm password
     if ($password !== $confirm) {
         $errors[] = "Passwords do not match.";
     }
 
-    // 5. Address optional
     if (!empty($address) && strlen($address) > 255) {
         $errors[] = "Address too long.";
     }
 
-    // If validation failed
     if (count($errors) > 0) {
         $message = implode("<br>", $errors);
     } 
     else 
     {
-        // Create new ID C00001
         $result = $conn->query("SELECT CustomerID FROM Customer ORDER BY CustomerID DESC LIMIT 1");
         $newID = "C00001";
 

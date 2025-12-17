@@ -9,7 +9,6 @@ if (!isset($_GET['id'])) {
 
 $productId = $_GET['id'];
 
-/* Fetch product */
 $stmt = $conn->prepare("SELECT * FROM product WHERE ProductID = ?");
 $stmt->bind_param("s", $productId);
 $stmt->execute();
@@ -66,7 +65,6 @@ $product = $result->fetch_assoc();
 
 </div>
 
-<!-- Toast -->
 <div id="toast" class="toast"></div>
 
 <script>

@@ -9,7 +9,6 @@ if (!isset($_SESSION["CustomerID"])) {
 
 $customerID = $_SESSION["CustomerID"];
 
-/* ---------- 取 cart items ---------- */
 $stmt = $conn->prepare("
     SELECT
         ci.ItemsID,
@@ -33,7 +32,6 @@ $subtotal = 0;
 ?>
 
 <style>
-/* 你的 CSS 原封不动 */
 .cart-wrap {
     padding: 40px;
     max-width: 1100px;
@@ -258,7 +256,7 @@ $subtotal = 0;
                 if (data.deleted) {
                     location.reload();
                 } else {
-                    location.reload(); // 简单安全版
+                    location.reload(); 
                 }
             });
         });

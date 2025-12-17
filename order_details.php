@@ -14,7 +14,6 @@ if ($orderid === '') {
     die("Invalid order ID.");
 }
 
-/* ---------- 1️⃣ 确认订单属于该用户 ---------- */
 $stmt = $conn->prepare("
     SELECT *
     FROM `order`
@@ -28,7 +27,6 @@ if (!$order) {
     die("Order not found.");
 }
 
-/* ---------- 2️⃣ 获取订单商品 ---------- */
 $stmt = $conn->prepare("
     SELECT oi.*, p.name
     FROM orderitems oi

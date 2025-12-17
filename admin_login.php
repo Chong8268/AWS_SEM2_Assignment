@@ -26,13 +26,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Invalid password.';
         } else {
 
-            // 🔐 Secure session
             session_regenerate_id(true);
             $_SESSION['StaffID'] = $staff['StaffID'];
             $_SESSION['StaffName'] = $staff['Name'];
             $_SESSION['Role'] = $staff['Role'];
 
-            // 🔀 Redirect by role
             if ($staff['Role'] === 'ADMIN') {
                 header("Location: admin.php");
                 exit;
@@ -43,7 +41,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
 
-            // ❌ Other roles not allowed
             session_destroy();
             $error = 'Access denied.';
         }
