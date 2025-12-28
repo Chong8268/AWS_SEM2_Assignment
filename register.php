@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $errors[] = "Invalid phone number. Must be 10–11 digits.";
          $phone = "";
     }
-    $checkPhone = $conn->prepare("SELECT * FROM Customer WHERE Phone = ?");
+    $checkPhone = $conn->prepare("SELECT * FROM customer WHERE Phone = ?");
     $checkPhone->bind_param("s", $phone);
     $checkPhone->execute();
     $resultPhone = $checkPhone->get_result();
