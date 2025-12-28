@@ -7,7 +7,7 @@ $newQty = (int)$_GET['qty'];
 $stmt = $conn->prepare("
     SELECT p.stock_quantity
     FROM cartitems ci
-    JOIN Product p ON ci.ProductID = p.ProductID
+    JOIN Product p ON ci.productID = p.productID
     WHERE ci.ItemsID = ?
 ");
 $stmt->bind_param("s", $itemID);
